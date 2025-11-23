@@ -18,13 +18,48 @@ const ONBOARDING_KEY = 'onboarding_complete';
 const EMAIL_KEY = 'user_email';
 const NEWSLETTER_KEY = 'newsletter_opt_in';
 
+const GOOGLE_SHEETS_URL = 'YOUR_GOOGLE_SHEETS_WEB_APP_URL_HERE';
+
 export default function OnboardingScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [optIn, setOptIn] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const sendToGoogleSheets = async (email: string, optIn: boolean) => {
+    if (!email.trim() || GOOGLE_SHEETS_URL === 'YOUR_GOOGLE_SHEETS_WEB_APP_URL_HERE') {
+      return;
+    }
+
+    try {
+      const response = await fetch(GOOGLE_SHEETS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          optIn,
+        }),
+      });
+
+      const result = await response.json();
+      console.log('Email sent to Google Sheets:', result);
+    } catch (error) {
+      console.error('Failed to send email to Google Sheets:', error);
+    }
+  };
 
   const handleContinue = async () => {
+    if (!isValidEmail) return;
+    
+    setIsSubmitting(true);
+    
     try {
+      if (email.trim() && optIn) {
+        await sendToGoogleSheets(email, optIn);
+      }
+      
       await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
       
       if (email.trim()) {
@@ -36,6 +71,8 @@ export default function OnboardingScreen() {
       router.replace('/(tabs)/collection');
     } catch (error) {
       console.error('Failed to save onboarding data:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -99,12 +136,14 @@ export default function OnboardingScreen() {
         </View>
 
         <TouchableOpacity
-          style={[styles.button, !isValidEmail && styles.buttonDisabled]}
+          style={[styles.button, (!isValidEmail || isSubmitting) && styles.buttonDisabled]}
           onPress={handleContinue}
-          disabled={!isValidEmail}
+          disabled={!isValidEmail || isSubmitting}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Get Started</Text>
+          <Text style={styles.buttonText}>
+            {isSubmitting ? 'Starting...' : 'Get Started'}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
