@@ -18,7 +18,7 @@ const ONBOARDING_KEY = 'onboarding_complete';
 const EMAIL_KEY = 'user_email';
 const NEWSLETTER_KEY = 'newsletter_opt_in';
 
-const GOOGLE_SHEETS_URL = 'YOUR_GOOGLE_SHEETS_WEB_APP_URL_HERE';
+const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyJz_JEvkSal8yyzFn4LSCnFGes3nI1QuTdGFF0VbzEPz3ooHD23cxq-H0Nsf7IbOE-9w/exec';
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function OnboardingScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const sendToGoogleSheets = async (email: string, optIn: boolean) => {
-    if (!email.trim() || GOOGLE_SHEETS_URL === 'YOUR_GOOGLE_SHEETS_WEB_APP_URL_HERE') {
+    if (!email.trim()) {
       return;
     }
 
