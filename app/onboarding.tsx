@@ -32,19 +32,20 @@ export default function OnboardingScreen() {
     }
 
     try {
-      const response = await fetch(GOOGLE_SHEETS_URL, {
+      const formData = new URLSearchParams();
+      formData.append('email', email.trim());
+      formData.append('optIn', optIn.toString());
+
+      await fetch(GOOGLE_SHEETS_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify({
-          email: email.trim(),
-          optIn,
-        }),
+        body: formData.toString(),
       });
 
-      const result = await response.json();
-      console.log('Email sent to Google Sheets:', result);
+      console.log('Email sent to Google Sheets successfully');
     } catch (error) {
       console.error('Failed to send email to Google Sheets:', error);
     }
