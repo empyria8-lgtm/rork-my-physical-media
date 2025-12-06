@@ -44,6 +44,9 @@ export default function CollectionScreen() {
       style={styles.card}
       onPress={() => router.push(`/detail/${item.id}`)}
       activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={`View ${item.title} details`}
+      accessibilityHint="Double tap to open item details"
     >
       <Image
         source={{ uri: item.photoUri }}
@@ -87,6 +90,8 @@ export default function CollectionScreen() {
             placeholderTextColor={colors.textLight}
             value={searchQuery}
             onChangeText={setSearchQuery}
+            accessibilityLabel="Search collection by title"
+            accessibilityHint="Type to filter your media items"
           />
         </View>
       </View>
@@ -95,6 +100,9 @@ export default function CollectionScreen() {
         <TouchableOpacity
           style={[styles.filterChip, selectedCategory === 'all' && styles.filterChipActive]}
           onPress={() => setSelectedCategory('all')}
+          accessibilityRole="button"
+          accessibilityLabel="Show all categories"
+          accessibilityState={{ selected: selectedCategory === 'all' }}
         >
           <Text style={[styles.filterText, selectedCategory === 'all' && styles.filterTextActive]}>
             All
@@ -105,6 +113,9 @@ export default function CollectionScreen() {
             key={category.id}
             style={[styles.filterChip, selectedCategory === category.id && styles.filterChipActive]}
             onPress={() => setSelectedCategory(category.id)}
+            accessibilityRole="button"
+            accessibilityLabel={`Filter by ${category.label}`}
+            accessibilityState={{ selected: selectedCategory === category.id }}
           >
             <Text style={[styles.filterText, selectedCategory === category.id && styles.filterTextActive]}>
               {category.emoji} {category.label}

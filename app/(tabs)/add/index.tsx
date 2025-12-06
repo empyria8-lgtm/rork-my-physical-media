@@ -269,6 +269,9 @@ export default function AddScreen() {
             <TouchableOpacity
               style={styles.removePhotoButton}
               onPress={() => setPhotoUri('')}
+              accessibilityRole="button"
+              accessibilityLabel="Remove photo"
+              accessibilityHint="Removes selected photo"
             >
               <X size={18} color={colors.white} />
             </TouchableOpacity>
@@ -278,6 +281,9 @@ export default function AddScreen() {
             <TouchableOpacity
               style={styles.photoButton}
               onPress={takePicture}
+              accessibilityRole="button"
+              accessibilityLabel="Take photo with camera"
+              accessibilityHint="Opens camera to capture item photo"
             >
               <Camera size={28} color={colors.text} />
               <Text style={styles.photoButtonText}>Take Photo</Text>
@@ -286,6 +292,9 @@ export default function AddScreen() {
             <TouchableOpacity
               style={styles.photoButton}
               onPress={pickFromGallery}
+              accessibilityRole="button"
+              accessibilityLabel="Choose photo from gallery"
+              accessibilityHint="Opens photo library to select image"
             >
               <ImageIcon size={28} color={colors.text} />
               <Text style={styles.photoButtonText}>Choose Photo</Text>
@@ -301,6 +310,8 @@ export default function AddScreen() {
             placeholderTextColor={colors.textLight}
             value={title}
             onChangeText={setTitle}
+            accessibilityLabel="Item title"
+            accessibilityHint="Enter a title for your media item"
           />
         </View>
 
@@ -315,6 +326,9 @@ export default function AddScreen() {
                   category === cat.id && styles.categoryChipActive,
                 ]}
                 onPress={() => setCategory(cat.id)}
+                accessibilityRole="button"
+                accessibilityLabel={`Select ${cat.label} category`}
+                accessibilityState={{ selected: category === cat.id }}
               >
                 <Text
                   style={[
@@ -340,6 +354,8 @@ export default function AddScreen() {
             multiline
             numberOfLines={4}
             textAlignVertical="top"
+            accessibilityLabel="Item notes"
+            accessibilityHint="Enter optional notes about this item"
           />
         </View>
 
@@ -347,6 +363,10 @@ export default function AddScreen() {
           style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
           onPress={handleSubmit}
           disabled={isSubmitting}
+          accessibilityRole="button"
+          accessibilityLabel="Save item"
+          accessibilityHint="Saves this item to your collection"
+          accessibilityState={{ disabled: isSubmitting }}
         >
           {isSubmitting ? (
             <ActivityIndicator color={colors.white} />

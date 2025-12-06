@@ -127,12 +127,16 @@ export default function DetailScreen() {
                 <TouchableOpacity
                   onPress={handleCancel}
                   style={styles.headerButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Cancel editing"
                 >
                   <Text style={styles.headerButtonText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleSave}
                   style={styles.headerButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Save changes"
                 >
                   <Text style={[styles.headerButtonText, styles.headerButtonTextPrimary]}>Save</Text>
                 </TouchableOpacity>
@@ -142,12 +146,16 @@ export default function DetailScreen() {
                 <TouchableOpacity
                   onPress={() => setIsEditing(true)}
                   style={styles.headerButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Edit item"
                 >
                   <Pencil size={20} color={colors.text} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleDelete}
                   style={styles.headerButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Delete item"
                 >
                   <Trash2 size={20} color={colors.text} />
                 </TouchableOpacity>
@@ -175,6 +183,7 @@ export default function DetailScreen() {
                 onChangeText={setEditTitle}
                 placeholder="Item title"
                 placeholderTextColor={colors.textLight}
+                accessibilityLabel="Edit item title"
               />
             </View>
 
@@ -189,6 +198,9 @@ export default function DetailScreen() {
                       editCategory === cat.id && styles.categoryChipActive,
                     ]}
                     onPress={() => setEditCategory(cat.id)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Select ${cat.label} category`}
+                    accessibilityState={{ selected: editCategory === cat.id }}
                   >
                     <Text
                       style={[
@@ -214,6 +226,7 @@ export default function DetailScreen() {
                 multiline
                 numberOfLines={6}
                 textAlignVertical="top"
+                accessibilityLabel="Edit item notes"
               />
             </View>
           </View>
