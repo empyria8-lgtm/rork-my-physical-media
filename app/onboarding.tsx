@@ -96,6 +96,36 @@ export default function OnboardingScreen() {
           <Text style={styles.subtitle}>
             Capture, organize, and cherish your collection of physical treasures
           </Text>
+
+          <View style={styles.steps}>
+            <View style={styles.step}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>1</Text>
+              </View>
+              <View style={styles.stepContent}>
+                <Text style={styles.stepTitle}>Take a Photo</Text>
+                <Text style={styles.stepText}>Snap a picture of your media item</Text>
+              </View>
+            </View>
+            <View style={styles.step}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>2</Text>
+              </View>
+              <View style={styles.stepContent}>
+                <Text style={styles.stepTitle}>Add Details</Text>
+                <Text style={styles.stepText}>Title, category, and notes</Text>
+              </View>
+            </View>
+            <View style={styles.step}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>3</Text>
+              </View>
+              <View style={styles.stepContent}>
+                <Text style={styles.stepTitle}>Build Your Library</Text>
+                <Text style={styles.stepText}>Search and organize with ease</Text>
+              </View>
+            </View>
+          </View>
         </View>
 
         <View style={styles.form}>
@@ -163,7 +193,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 32,
   },
   iconContainer: {
     width: 96,
@@ -190,6 +220,45 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
     paddingHorizontal: 16,
+    marginBottom: 32,
+  },
+  steps: {
+    width: '100%',
+    gap: 16,
+  },
+  step: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 14,
+    paddingHorizontal: 8,
+  },
+  stepNumber: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepNumberText: {
+    fontSize: 16,
+    fontWeight: '700' as const,
+    color: colors.white,
+  },
+  stepContent: {
+    flex: 1,
+    paddingTop: 2,
+  },
+  stepTitle: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: colors.text,
+    marginBottom: 2,
+  },
+  stepText: {
+    fontSize: 14,
+    color: colors.textLight,
+    lineHeight: 20,
   },
   form: {
     flex: 1,
