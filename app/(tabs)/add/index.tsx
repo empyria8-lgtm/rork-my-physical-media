@@ -14,6 +14,7 @@ import { Stack, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { Camera, Image as ImageIcon, X } from 'lucide-react-native';
 import { useMediaContext } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
@@ -33,6 +34,20 @@ export default function AddScreen() {
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const compressImage = async (uri: string): Promise<string> => {
+    try {
+      const manipResult = await manipulateAsync(
+        uri,
+        [{ resize: { width: 1200 } }],
+        { compress: 0.7, format: SaveFormat.JPEG }
+      );
+      return manipResult.uri;
+    } catch (error) {
+      console.error('Failed to compress image:', error);
+      return uri;
+    }
+  };
+
   const takePicture = async () => {
     if (!permission?.granted) {
       const result = await requestPermission();
@@ -47,11 +62,12 @@ export default function AddScreen() {
         mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.8,
+        quality: 0.7,
       });
 
       if (!result.canceled && result.assets[0]) {
-        setPhotoUri(result.assets[0].uri);
+        const compressed = await compressImage(result.assets[0].uri);
+        setPhotoUri(compressed);
       }
     } else {
       setShowCamera(true);
@@ -62,7 +78,8 @@ export default function AddScreen() {
     if (cameraRef) {
       const photo = await cameraRef.takePictureAsync();
       if (photo) {
-        setPhotoUri(photo.uri);
+        const compressed = await compressImage(photo.uri);
+        setPhotoUri(compressed);
         setShowCamera(false);
       }
     }
@@ -73,11 +90,12 @@ export default function AddScreen() {
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.8,
+      quality: 0.7,
     });
 
     if (!result.canceled && result.assets[0]) {
-      setPhotoUri(result.assets[0].uri);
+      const compressed = await compressImage(result.assets[0].uri);
+      setPhotoUri(compressed);
     }
   };
 
