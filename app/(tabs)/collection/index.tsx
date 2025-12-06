@@ -83,7 +83,7 @@ export default function CollectionScreen() {
           <Search size={18} color={colors.textLight} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search..."
+            placeholder="Search by title"
             placeholderTextColor={colors.textLight}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 16,
     color: colors.text,
   },
   filterContainer: {
@@ -200,8 +200,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.text,
   },
   filterText: {
-    fontSize: 13,
-    fontWeight: '500' as const,
+    fontSize: 14,
+    fontWeight: '600' as const,
     color: colors.text,
   },
   filterTextActive: {
@@ -230,13 +230,15 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   cardTitle: {
-    fontSize: 15,
-    fontWeight: '600' as const,
+    fontSize: 16,
+    fontWeight: '700' as const,
     color: colors.text,
     marginBottom: 4,
+    lineHeight: 20,
   },
   cardCategory: {
-    fontSize: 12,
+    fontSize: 13,
+    fontWeight: '500' as const,
     color: colors.textLight,
   },
   emptyState: {
@@ -261,11 +263,12 @@ const styles = StyleSheet.create({
     fontSize: 48,
   },
   emptyTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700' as const,
     color: colors.text,
     marginBottom: 12,
     textAlign: 'center',
+    lineHeight: 32,
   },
   emptyText: {
     fontSize: 16,
@@ -293,8 +296,8 @@ const styles = StyleSheet.create({
   },
   emptyHintText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
     color: colors.text,
-    fontWeight: '500' as const,
+    fontWeight: '600' as const,
   },
 });

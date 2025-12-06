@@ -275,21 +275,22 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   headerButtonText: {
-    fontSize: 16,
-    fontWeight: '500' as const,
+    fontSize: 17,
+    fontWeight: '600' as const,
     color: colors.text,
   },
   headerButtonTextPrimary: {
-    fontWeight: '600' as const,
+    fontWeight: '700' as const,
   },
   section: {
     padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600' as const,
+    fontSize: 26,
+    fontWeight: '700' as const,
     color: colors.text,
     marginBottom: 12,
+    lineHeight: 32,
   },
   row: {
     flexDirection: 'row',
@@ -298,11 +299,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   categoryLabel: {
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '500' as const,
     color: colors.textLight,
   },
   date: {
-    fontSize: 13,
+    fontSize: 14,
     color: colors.textLight,
   },
   notesContainer: {
@@ -311,16 +313,16 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   notesText: {
-    fontSize: 15,
+    fontSize: 16,
     color: colors.text,
-    lineHeight: 22,
+    lineHeight: 24,
   },
   inputGroup: {
     marginBottom: 24,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '500' as const,
+    fontSize: 15,
+    fontWeight: '600' as const,
     color: colors.text,
     marginBottom: 10,
   },

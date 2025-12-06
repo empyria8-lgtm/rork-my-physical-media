@@ -280,7 +280,7 @@ export default function AddScreen() {
               onPress={takePicture}
             >
               <Camera size={28} color={colors.text} />
-              <Text style={styles.photoButtonText}>Camera</Text>
+              <Text style={styles.photoButtonText}>Take Photo</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -288,7 +288,7 @@ export default function AddScreen() {
               onPress={pickFromGallery}
             >
               <ImageIcon size={28} color={colors.text} />
-              <Text style={styles.photoButtonText}>Gallery</Text>
+              <Text style={styles.photoButtonText}>Choose Photo</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -374,8 +374,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '500' as const,
+    fontSize: 15,
+    fontWeight: '600' as const,
     color: colors.text,
     marginBottom: 10,
   },
@@ -394,8 +394,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   photoButtonText: {
-    fontSize: 13,
-    fontWeight: '500' as const,
+    fontSize: 14,
+    fontWeight: '600' as const,
     color: colors.text,
     textAlign: 'center',
   },
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
   submitButton: {
     backgroundColor: colors.text,
     borderRadius: 12,
-    paddingVertical: 14,
+    paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
@@ -470,8 +470,8 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   submitButtonText: {
-    fontSize: 16,
-    fontWeight: '600' as const,
+    fontSize: 17,
+    fontWeight: '700' as const,
     color: colors.white,
   },
   cameraContainer: {
