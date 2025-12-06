@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import { Search } from 'lucide-react-native';
+import { Search, Plus } from 'lucide-react-native';
 import { useMediaContext } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
 import colors from '@/constants/colors';
@@ -114,17 +114,36 @@ export default function CollectionScreen() {
       </View>
 
       {filteredItems.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyEmoji}>📚</Text>
-          <Text style={styles.emptyTitle}>
-            {items.length === 0 ? 'No items yet' : 'No results'}
-          </Text>
-          <Text style={styles.emptyText}>
-            {items.length === 0
-              ? 'Tap + below to add your first item'
-              : 'Try adjusting your search or filter'}
-          </Text>
-        </View>
+        items.length === 0 ? (
+          <View style={styles.emptyState}>
+            <View style={styles.emptyIconContainer}>
+              <View style={styles.emptyIconCircle}>
+                <Text style={styles.emptyEmoji}>📚</Text>
+              </View>
+            </View>
+            <Text style={styles.emptyTitle}>Start Your Collection</Text>
+            <Text style={styles.emptyText}>
+              Organize your physical media library.{' \n'}
+              Add books, vinyl, CDs, games & more.
+            </Text>
+            <View style={styles.emptyHint}>
+              <View style={styles.emptyHintIcon}>
+                <Plus size={16} color={colors.white} strokeWidth={2.5} />
+              </View>
+              <Text style={styles.emptyHintText}>
+                Tap the + button below to add your first item
+              </Text>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyEmoji}>🔍</Text>
+            <Text style={styles.emptyTitle}>No Results Found</Text>
+            <Text style={styles.emptyText}>
+              Try adjusting your search or filter
+            </Text>
+          </View>
+        )
       ) : (
         <FlatList
           data={filteredItems}
@@ -225,21 +244,57 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 40,
+    paddingBottom: 60,
+  },
+  emptyIconContainer: {
+    marginBottom: 24,
+  },
+  emptyIconCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: colors.cream,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyEmoji: {
-    fontSize: 56,
-    marginBottom: 16,
+    fontSize: 48,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600' as const,
+    fontSize: 24,
+    fontWeight: '700' as const,
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: 12,
+    textAlign: 'center',
   },
   emptyText: {
-    fontSize: 15,
+    fontSize: 16,
     color: colors.textLight,
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  emptyHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    gap: 10,
+  },
+  emptyHintIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.text,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyHintText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '500' as const,
   },
 });
