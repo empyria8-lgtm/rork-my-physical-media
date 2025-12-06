@@ -157,14 +157,14 @@ export default function AddScreen() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: 'Add New Item',
+          title: 'Add Item',
           headerStyle: {
             backgroundColor: colors.background,
           },
           headerTintColor: colors.text,
           headerTitleStyle: {
-            fontWeight: '700' as const,
-            fontSize: 24,
+            fontWeight: '600' as const,
+            fontSize: 20,
           },
           headerShadowVisible: false,
         }}
@@ -174,49 +174,45 @@ export default function AddScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
-        <View style={styles.section}>
-          <Text style={styles.label}>Photo</Text>
+        {photoUri ? (
+          <View style={styles.photoPreviewContainer}>
+            <Image
+              source={{ uri: photoUri }}
+              style={styles.photoPreview}
+              contentFit="cover"
+            />
+            <TouchableOpacity
+              style={styles.removePhotoButton}
+              onPress={() => setPhotoUri('')}
+            >
+              <X size={18} color={colors.white} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.photoButtons}>
+            <TouchableOpacity
+              style={styles.photoButton}
+              onPress={takePicture}
+            >
+              <Camera size={28} color={colors.text} />
+              <Text style={styles.photoButtonText}>Camera</Text>
+            </TouchableOpacity>
 
-          {photoUri ? (
-            <View style={styles.photoPreviewContainer}>
-              <Image
-                source={{ uri: photoUri }}
-                style={styles.photoPreview}
-                contentFit="cover"
-              />
-              <TouchableOpacity
-                style={styles.removePhotoButton}
-                onPress={() => setPhotoUri('')}
-              >
-                <X size={20} color={colors.white} />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.photoButtons}>
-              <TouchableOpacity
-                style={styles.photoButton}
-                onPress={takePicture}
-              >
-                <Camera size={32} color={colors.primary} />
-                <Text style={styles.photoButtonText}>Take Photo</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.photoButton}
-                onPress={pickFromGallery}
-              >
-                <ImageIcon size={32} color={colors.primary} />
-                <Text style={styles.photoButtonText}>Choose from Gallery</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+            <TouchableOpacity
+              style={styles.photoButton}
+              onPress={pickFromGallery}
+            >
+              <ImageIcon size={28} color={colors.text} />
+              <Text style={styles.photoButtonText}>Gallery</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         <View style={styles.section}>
-          <Text style={styles.label}>Title *</Text>
+          <Text style={styles.label}>Title</Text>
           <TextInput
             style={styles.input}
-            placeholder="e.g., Fleetwood Mac - Rumours"
+            placeholder="Enter title"
             placeholderTextColor={colors.textLight}
             value={title}
             onChangeText={setTitle}
@@ -224,7 +220,7 @@ export default function AddScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Category *</Text>
+          <Text style={styles.label}>Category</Text>
           <View style={styles.categories}>
             {CATEGORIES.map((cat) => (
               <TouchableOpacity
@@ -249,10 +245,10 @@ export default function AddScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Notes (Optional)</Text>
+          <Text style={styles.label}>Notes</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
-            placeholder="Add any additional notes about this item..."
+            placeholder="Optional notes"
             placeholderTextColor={colors.textLight}
             value={notes}
             onChangeText={setNotes}
@@ -270,7 +266,7 @@ export default function AddScreen() {
           {isSubmitting ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.submitButtonText}>Add to Collection</Text>
+            <Text style={styles.submitButtonText}>Save Item</Text>
           )}
         </TouchableOpacity>
       </ScrollView>
@@ -287,46 +283,45 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
+    padding: 20,
   },
   section: {
     marginBottom: 24,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '700' as const,
+    fontSize: 14,
+    fontWeight: '500' as const,
     color: colors.text,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   photoButtons: {
     flexDirection: 'row',
     gap: 12,
+    marginBottom: 24,
   },
   photoButton: {
     flex: 1,
     backgroundColor: colors.white,
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: 12,
+    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    borderWidth: 2,
-    borderColor: colors.primary,
-    borderStyle: 'dashed',
   },
   photoButtonText: {
-    fontSize: 14,
-    fontWeight: '600' as const,
-    color: colors.primary,
+    fontSize: 13,
+    fontWeight: '500' as const,
+    color: colors.text,
     textAlign: 'center',
   },
   photoPreviewContainer: {
     position: 'relative',
     width: '100%',
     aspectRatio: 1,
-    borderRadius: 16,
+    borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: colors.cream,
+    marginBottom: 24,
   },
   photoPreview: {
     width: '100%',
@@ -336,22 +331,20 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     right: 12,
-    backgroundColor: colors.primary,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    backgroundColor: colors.text,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   input: {
     backgroundColor: colors.white,
     borderRadius: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 12,
-    fontSize: 16,
+    fontSize: 15,
     color: colors.text,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   textArea: {
     minHeight: 100,
@@ -363,29 +356,26 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 16,
     backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   categoryChipActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.text,
   },
   categoryText: {
-    fontSize: 14,
-    fontWeight: '600' as const,
+    fontSize: 13,
+    fontWeight: '500' as const,
     color: colors.text,
   },
   categoryTextActive: {
     color: colors.white,
   },
   submitButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 16,
-    paddingVertical: 16,
+    backgroundColor: colors.text,
+    borderRadius: 12,
+    paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
@@ -395,8 +385,8 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   submitButtonText: {
-    fontSize: 18,
-    fontWeight: '700' as const,
+    fontSize: 16,
+    fontWeight: '600' as const,
     color: colors.white,
   },
   cameraContainer: {

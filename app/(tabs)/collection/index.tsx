@@ -5,12 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  ScrollView,
+  FlatList,
   Platform,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import { Search, ChevronDown, ChevronRight } from 'lucide-react-native';
+import { Search } from 'lucide-react-native';
 import { useMediaContext } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
 import colors from '@/constants/colors';
@@ -19,57 +19,61 @@ import { MediaItem } from '@/types/media';
 export default function CollectionScreen() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
   const { items } = useMediaContext();
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   const filteredItems = useMemo(() => {
-    if (!searchQuery) return items;
-    const query = searchQuery.toLowerCase();
-    return items.filter(item =>
-      item.title.toLowerCase().includes(query) ||
-      item.notes?.toLowerCase().includes(query)
-    );
-  }, [items, searchQuery]);
+    let filtered = items;
 
-  const groupedByCategory = useMemo(() => {
-    const grouped = new Map<CategoryId, MediaItem[]>();
-    
-    CATEGORIES.forEach(cat => {
-      grouped.set(cat.id, []);
-    });
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(item => item.category === selectedCategory);
+    }
 
-    filteredItems.forEach(item => {
-      const existing = grouped.get(item.category) || [];
-      grouped.set(item.category, [...existing, item]);
-    });
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(item =>
+        item.title.toLowerCase().includes(query) ||
+        item.notes?.toLowerCase().includes(query)
+      );
+    }
 
-    return grouped;
-  }, [filteredItems]);
+    return filtered;
+  }, [items, searchQuery, selectedCategory]);
 
-  const toggleCategory = (categoryId: string) => {
-    setExpandedCategories(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(categoryId)) {
-        newSet.delete(categoryId);
-      } else {
-        newSet.add(categoryId);
-      }
-      return newSet;
-    });
-  };
+  const renderItem = ({ item }: { item: MediaItem }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => router.push(`/detail/${item.id}`)}
+      activeOpacity={0.7}
+    >
+      <Image
+        source={{ uri: item.photoUri }}
+        style={styles.cardImage}
+        contentFit="cover"
+      />
+      <View style={styles.cardContent}>
+        <Text style={styles.cardTitle} numberOfLines={2}>
+          {item.title}
+        </Text>
+        <Text style={styles.cardCategory}>
+          {CATEGORIES.find(c => c.id === item.category)?.emoji} {CATEGORIES.find(c => c.id === item.category)?.label}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: 'My Physical Media',
+          title: 'My Collection',
           headerStyle: {
             backgroundColor: colors.background,
           },
           headerTintColor: colors.text,
           headerTitleStyle: {
-            fontWeight: '700' as const,
-            fontSize: 24,
+            fontWeight: '600' as const,
+            fontSize: 20,
           },
           headerShadowVisible: false,
         }}
@@ -77,10 +81,10 @@ export default function CollectionScreen() {
 
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
-          <Search size={20} color={colors.textLight} />
+          <Search size={18} color={colors.textLight} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search your collection..."
+            placeholder="Search..."
             placeholderTextColor={colors.textLight}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -88,70 +92,50 @@ export default function CollectionScreen() {
         </View>
       </View>
 
+      <View style={styles.filterContainer}>
+        <TouchableOpacity
+          style={[styles.filterChip, selectedCategory === 'all' && styles.filterChipActive]}
+          onPress={() => setSelectedCategory('all')}
+        >
+          <Text style={[styles.filterText, selectedCategory === 'all' && styles.filterTextActive]}>
+            All
+          </Text>
+        </TouchableOpacity>
+        {CATEGORIES.filter(cat => items.some(item => item.category === cat.id)).map((category) => (
+          <TouchableOpacity
+            key={category.id}
+            style={[styles.filterChip, selectedCategory === category.id && styles.filterChipActive]}
+            onPress={() => setSelectedCategory(category.id)}
+          >
+            <Text style={[styles.filterText, selectedCategory === category.id && styles.filterTextActive]}>
+              {category.emoji} {category.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       {filteredItems.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyEmoji}>📸</Text>
-          <Text style={styles.emptyTitle}>No items yet</Text>
+          <Text style={styles.emptyEmoji}>📚</Text>
+          <Text style={styles.emptyTitle}>
+            {items.length === 0 ? 'No items yet' : 'No results'}
+          </Text>
           <Text style={styles.emptyText}>
-            Start building your collection by adding your first item!
+            {items.length === 0
+              ? 'Tap + below to add your first item'
+              : 'Try adjusting your search or filter'}
           </Text>
         </View>
       ) : (
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-          {CATEGORIES.map((category) => {
-            const categoryItems = groupedByCategory.get(category.id) || [];
-            if (categoryItems.length === 0) return null;
-            
-            const isExpanded = expandedCategories.has(category.id);
-
-            return (
-              <View key={category.id} style={styles.categorySection}>
-                <TouchableOpacity
-                  style={styles.categoryHeader}
-                  onPress={() => toggleCategory(category.id)}
-                >
-                  <View style={styles.categoryHeaderLeft}>
-                    <Text style={styles.categoryEmoji}>{category.emoji}</Text>
-                    <Text style={styles.categoryTitle}>{category.label}</Text>
-                    <View style={styles.countBadge}>
-                      <Text style={styles.countText}>{categoryItems.length}</Text>
-                    </View>
-                  </View>
-                  {isExpanded ? (
-                    <ChevronDown size={24} color={colors.text} />
-                  ) : (
-                    <ChevronRight size={24} color={colors.text} />
-                  )}
-                </TouchableOpacity>
-
-                {isExpanded && (
-                  <View style={styles.categoryGrid}>
-                    {categoryItems.map((item) => (
-                      <TouchableOpacity
-                        key={item.id}
-                        style={styles.card}
-                        onPress={() => router.push(`/detail/${item.id}`)}
-                      >
-                        <View style={styles.imageContainer}>
-                          <Image
-                            source={{ uri: item.photoUri }}
-                            style={styles.image}
-                            contentFit="cover"
-                          />
-                        </View>
-                        <View style={styles.cardContent}>
-                          <Text style={styles.cardTitle} numberOfLines={2}>
-                            {item.title}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                )}
-              </View>
-            );
-          })}
-        </ScrollView>
+        <FlatList
+          data={filteredItems}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          numColumns={2}
+          contentContainerStyle={styles.listContent}
+          columnWrapperStyle={styles.row}
+          showsVerticalScrollIndicator={false}
+        />
       )}
     </View>
   );
@@ -163,124 +147,100 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   searchContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 12,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 8,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.white,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: Platform.OS === 'ios' ? 12 : 8,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 8,
+    gap: 10,
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 15,
     color: colors.text,
   },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
-  },
-  categorySection: {
-    marginBottom: 16,
-  },
-  categoryHeader: {
+  filterContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  filterChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 16,
     backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: 8,
   },
-  categoryHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+  filterChipActive: {
+    backgroundColor: colors.text,
   },
-  categoryEmoji: {
-    fontSize: 24,
-  },
-  categoryTitle: {
-    fontSize: 18,
-    fontWeight: '700' as const,
+  filterText: {
+    fontSize: 13,
+    fontWeight: '500' as const,
     color: colors.text,
   },
-  countBadge: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    minWidth: 24,
-    alignItems: 'center',
-  },
-  countText: {
-    fontSize: 12,
-    fontWeight: '700' as const,
+  filterTextActive: {
     color: colors.white,
   },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
+  listContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  row: {
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
   card: {
     width: '48%',
     backgroundColor: colors.white,
     borderRadius: 12,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.border,
   },
-  imageContainer: {
+  cardImage: {
     width: '100%',
     aspectRatio: 1,
     backgroundColor: colors.cream,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
   },
   cardContent: {
     padding: 12,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
+    fontSize: 15,
+    fontWeight: '600' as const,
     color: colors.text,
     marginBottom: 4,
   },
-
+  cardCategory: {
+    fontSize: 12,
+    color: colors.textLight,
+  },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: 40,
   },
   emptyEmoji: {
-    fontSize: 64,
+    fontSize: 56,
     marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: 24,
-    fontWeight: '700' as const,
+    fontSize: 20,
+    fontWeight: '600' as const,
     color: colors.text,
     marginBottom: 8,
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 15,
     color: colors.textLight,
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 22,
   },
 });

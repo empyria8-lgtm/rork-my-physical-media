@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import { Pencil, Trash2, Check, X } from 'lucide-react-native';
+import { Pencil, Trash2 } from 'lucide-react-native';
 import { useMediaContext } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
 import colors from '@/constants/colors';
@@ -84,13 +84,13 @@ export default function DetailScreen() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: isEditing ? 'Edit Item' : 'Item Details',
+          title: isEditing ? 'Edit' : '',
           headerStyle: {
             backgroundColor: colors.background,
           },
           headerTintColor: colors.text,
           headerTitleStyle: {
-            fontWeight: '700' as const,
+            fontWeight: '600' as const,
           },
           headerShadowVisible: false,
           headerRight: () =>
@@ -100,13 +100,13 @@ export default function DetailScreen() {
                   onPress={handleCancel}
                   style={styles.headerButton}
                 >
-                  <X size={24} color={colors.text} />
+                  <Text style={styles.headerButtonText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleSave}
                   style={styles.headerButton}
                 >
-                  <Check size={24} color={colors.primary} />
+                  <Text style={[styles.headerButtonText, styles.headerButtonTextPrimary]}>Save</Text>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -121,7 +121,7 @@ export default function DetailScreen() {
                   onPress={handleDelete}
                   style={styles.headerButton}
                 >
-                  <Trash2 size={20} color={colors.primary} />
+                  <Trash2 size={20} color={colors.text} />
                 </TouchableOpacity>
               </View>
             ),
@@ -138,7 +138,7 @@ export default function DetailScreen() {
         </View>
 
         {isEditing ? (
-          <View style={styles.editSection}>
+          <View style={styles.section}>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Title</Text>
               <TextInput
@@ -190,31 +190,27 @@ export default function DetailScreen() {
             </View>
           </View>
         ) : (
-          <View style={styles.detailSection}>
+          <View style={styles.section}>
             <Text style={styles.title}>{item.title}</Text>
 
-            <View style={styles.categoryBadge}>
-              <Text style={styles.categoryBadgeText}>
+            <View style={styles.row}>
+              <Text style={styles.categoryLabel}>
                 {category?.emoji} {category?.label}
+              </Text>
+              <Text style={styles.date}>
+                {new Date(item.createdAt).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
               </Text>
             </View>
 
             {item.notes && (
               <View style={styles.notesContainer}>
-                <Text style={styles.notesLabel}>Notes</Text>
                 <Text style={styles.notesText}>{item.notes}</Text>
               </View>
             )}
-
-            <View style={styles.metadata}>
-              <Text style={styles.metadataText}>
-                Added {new Date(item.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </Text>
-            </View>
           </View>
         )}
       </ScrollView>
@@ -244,83 +240,69 @@ const styles = StyleSheet.create({
   },
   headerButtons: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 12,
     marginRight: 8,
   },
   headerButton: {
     padding: 4,
   },
-  detailSection: {
+  headerButtonText: {
+    fontSize: 16,
+    fontWeight: '500' as const,
+    color: colors.text,
+  },
+  headerButtonTextPrimary: {
+    fontWeight: '600' as const,
+  },
+  section: {
     padding: 20,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700' as const,
-    color: colors.text,
-    marginBottom: 16,
-  },
-  categoryBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginBottom: 24,
-  },
-  categoryBadgeText: {
-    fontSize: 14,
+    fontSize: 24,
     fontWeight: '600' as const,
-    color: colors.white,
+    color: colors.text,
+    marginBottom: 12,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  categoryLabel: {
+    fontSize: 14,
+    color: colors.textLight,
+  },
+  date: {
+    fontSize: 13,
+    color: colors.textLight,
   },
   notesContainer: {
     backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  notesLabel: {
-    fontSize: 14,
-    fontWeight: '700' as const,
-    color: colors.text,
-    marginBottom: 8,
   },
   notesText: {
-    fontSize: 16,
+    fontSize: 15,
     color: colors.text,
-    lineHeight: 24,
-  },
-  metadata: {
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  metadataText: {
-    fontSize: 14,
-    color: colors.textLight,
-  },
-  editSection: {
-    padding: 20,
+    lineHeight: 22,
   },
   inputGroup: {
     marginBottom: 24,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '700' as const,
+    fontSize: 14,
+    fontWeight: '500' as const,
     color: colors.text,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   input: {
     backgroundColor: colors.white,
     borderRadius: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 12,
-    fontSize: 16,
+    fontSize: 15,
     color: colors.text,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   textArea: {
     minHeight: 120,
@@ -332,20 +314,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 16,
     backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   categoryChipActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.text,
   },
   categoryText: {
-    fontSize: 14,
-    fontWeight: '600' as const,
+    fontSize: 13,
+    fontWeight: '500' as const,
     color: colors.text,
   },
   categoryTextActive: {
@@ -357,7 +336,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   notFoundText: {
-    fontSize: 18,
+    fontSize: 16,
     color: colors.textLight,
   },
 });
