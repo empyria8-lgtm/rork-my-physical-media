@@ -32,8 +32,7 @@ export default function CollectionScreen() {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(query) ||
-        item.notes?.toLowerCase().includes(query)
+        item.title.toLowerCase().includes(query)
       );
     }
 
