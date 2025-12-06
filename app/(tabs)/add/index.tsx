@@ -44,21 +44,91 @@ export default function AddScreen() {
       return manipResult.uri;
     } catch (error) {
       console.error('Failed to compress image:', error);
+      Alert.alert(
+        'Upload Issue',
+        'We had trouble processing your photo. The original version will be used instead.',
+        [{ text: 'OK' }]
+      );
       return uri;
     }
   };
 
   const takePicture = async () => {
-    if (!permission?.granted) {
-      const result = await requestPermission();
-      if (!result.granted) {
-        Alert.alert('Permission needed', 'Camera permission is required to take photos');
-        return;
+    try {
+      if (!permission?.granted) {
+        const result = await requestPermission();
+        if (!result.granted) {
+          Alert.alert(
+            'Camera Access Needed',
+            'To take photos of your items, please allow camera access in your device settings.',
+            [{ text: 'Got It' }]
+          );
+          return;
+        }
       }
-    }
 
-    if (Platform.OS === 'web') {
-      const result = await ImagePicker.launchCameraAsync({
+      if (Platform.OS === 'web') {
+        const result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ['images'],
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.7,
+        });
+
+        if (!result.canceled && result.assets[0]) {
+          const compressed = await compressImage(result.assets[0].uri);
+          setPhotoUri(compressed);
+        }
+      } else {
+        setShowCamera(true);
+      }
+    } catch (error) {
+      console.error('Camera error:', error);
+      Alert.alert(
+        'Camera Error',
+        'Unable to open camera. Please try selecting from your gallery instead.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const capturePhoto = async () => {
+    try {
+      if (cameraRef) {
+        const photo = await cameraRef.takePictureAsync();
+        if (photo) {
+          const compressed = await compressImage(photo.uri);
+          setPhotoUri(compressed);
+          setShowCamera(false);
+        }
+      }
+    } catch (error) {
+      console.error('Capture error:', error);
+      Alert.alert(
+        'Photo Capture Failed',
+        'Unable to capture photo. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const pickFromGallery = async () => {
+    try {
+      const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        const { status: newStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (newStatus !== 'granted') {
+          Alert.alert(
+            'Gallery Access Needed',
+            'To select photos, please allow photo library access in your device settings.',
+            [{ text: 'Got It' }]
+          );
+          return;
+        }
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
@@ -69,44 +139,32 @@ export default function AddScreen() {
         const compressed = await compressImage(result.assets[0].uri);
         setPhotoUri(compressed);
       }
-    } else {
-      setShowCamera(true);
-    }
-  };
-
-  const capturePhoto = async () => {
-    if (cameraRef) {
-      const photo = await cameraRef.takePictureAsync();
-      if (photo) {
-        const compressed = await compressImage(photo.uri);
-        setPhotoUri(compressed);
-        setShowCamera(false);
-      }
-    }
-  };
-
-  const pickFromGallery = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      const compressed = await compressImage(result.assets[0].uri);
-      setPhotoUri(compressed);
+    } catch (error) {
+      console.error('Gallery error:', error);
+      Alert.alert(
+        'Gallery Error',
+        'Unable to access your photo library. Please check your permissions and try again.',
+        [{ text: 'OK' }]
+      );
     }
   };
 
   const handleSubmit = async () => {
     if (!photoUri.trim()) {
-      Alert.alert('Photo required', 'Please take or select a photo of your item');
+      Alert.alert(
+        '📷 Photo Required',
+        'Please add a photo of your item before saving. You can use the camera or choose from your gallery.',
+        [{ text: 'OK' }]
+      );
       return;
     }
 
     if (!title.trim()) {
-      Alert.alert('Title required', 'Please enter a title for your item');
+      Alert.alert(
+        '✏️ Title Required',
+        'Please give your item a title so you can find it easily later.',
+        [{ text: 'OK' }]
+      );
       return;
     }
 
@@ -125,7 +183,7 @@ export default function AddScreen() {
       setCategory('other');
       setNotes('');
 
-      Alert.alert('Success!', 'Item added to your collection', [
+      Alert.alert('✅ Item Added!', 'Your item has been saved to your collection.', [
         {
           text: 'View Collection',
           onPress: () => router.push('/(tabs)/collection'),
@@ -137,7 +195,16 @@ export default function AddScreen() {
       ]);
     } catch (error) {
       console.error('Failed to add item:', error);
-      Alert.alert('Error', 'Failed to add item. Please try again.');
+      
+      const errorMessage = error instanceof Error && error.message === 'STORAGE_FULL'
+        ? 'Your device storage is full. Please free up some space or delete old items from your collection.'
+        : 'We couldn\'t save your item. Please check your device storage and try again.';
+      
+      Alert.alert(
+        'Upload Failed',
+        errorMessage,
+        [{ text: 'OK' }]
+      );
     } finally {
       setIsSubmitting(false);
     }

@@ -40,16 +40,25 @@ export default function DetailScreen() {
 
   const handleDelete = () => {
     Alert.alert(
-      'Delete Item',
-      'Are you sure you want to delete this item from your collection?',
+      '🗑️ Delete Item?',
+      'This item will be permanently removed from your collection. This action cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
-            deleteItem(id);
-            router.back();
+            try {
+              deleteItem(id);
+              router.back();
+            } catch (error) {
+              console.error('Failed to delete item:', error);
+              Alert.alert(
+                'Delete Failed',
+                'We couldn\'t delete this item. Please try again.',
+                [{ text: 'OK' }]
+              );
+            }
           },
         },
       ]
@@ -58,17 +67,36 @@ export default function DetailScreen() {
 
   const handleSave = () => {
     if (!editTitle.trim()) {
-      Alert.alert('Error', 'Title cannot be empty');
+      Alert.alert(
+        '✏️ Title Required',
+        'Your item needs a title. Please enter one before saving.',
+        [{ text: 'OK' }]
+      );
       return;
     }
 
-    updateItem(id, {
-      title: editTitle.trim(),
-      category: editCategory,
-      notes: editNotes.trim() || undefined,
-    });
+    try {
+      updateItem(id, {
+        title: editTitle.trim(),
+        category: editCategory,
+        notes: editNotes.trim() || undefined,
+      });
 
-    setIsEditing(false);
+      setIsEditing(false);
+      
+      Alert.alert(
+        '✅ Changes Saved',
+        'Your item has been updated successfully.',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Failed to update item:', error);
+      Alert.alert(
+        'Save Failed',
+        'We couldn\'t save your changes. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
   };
 
   const handleCancel = () => {

@@ -12,6 +12,7 @@ async function loadMediaItems(): Promise<MediaItem[]> {
     return stored ? JSON.parse(stored) : [];
   } catch (error) {
     console.error('Failed to load media items:', error);
+    console.log('Storage error details:', error);
     return [];
   }
 }
@@ -22,7 +23,15 @@ async function saveMediaItems(items: MediaItem[]): Promise<MediaItem[]> {
     return items;
   } catch (error) {
     console.error('Failed to save media items:', error);
-    throw error;
+    console.log('Storage error details:', error);
+    
+    if (error instanceof Error) {
+      if (error.message.includes('QuotaExceeded') || error.message.includes('quota')) {
+        throw new Error('STORAGE_FULL');
+      }
+    }
+    
+    throw new Error('STORAGE_ERROR');
   }
 }
 
