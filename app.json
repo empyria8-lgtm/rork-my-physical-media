@@ -26,7 +26,6 @@
       }"NSPhotoLibraryAddUsageDescription": "My Physical Media needs permission to save photos of your media items to your photo library.",
     },
     "android": {
-      "package": "app.rork.myphysicalmedia",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -49,9 +48,6 @@
           "origin": "https://rork.com/"
         }
       ],
-      "cameraPermission": "My Physical Media needs camera access to take photos of your media items (books, vinyl, CDs, games) for your collection.",
-"microphonePermission": "My Physical Media needs microphone access for video recording features.",
-"photosPermission": "My Physical Media needs access to your photos to select images of your media items for your collection."
       "expo-font",
       "expo-web-browser",
       [
