@@ -34,13 +34,11 @@ export default function AddScreen() {
 
   const [showCamera, setShowCamera] = useState(false);
   const [cameraRef, setCameraRef] = useState<CameraView | null>(null);
-
   const [photoUri, setPhotoUri] = useState('');
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<CategoryId>('other');
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [showCameraPermissionPrompt, setShowCameraPermissionPrompt] = useState(false);
   const [showPhotoPermissionPrompt, setShowPhotoPermissionPrompt] = useState(false);
   const [isCameraPermissionDenied, setIsCameraPermissionDenied] = useState(false);

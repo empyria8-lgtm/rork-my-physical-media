@@ -22,15 +22,23 @@ export default function DetailScreen() {
 
   const item = items.find((i) => i.id === id);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editCategory, setEditCategory] = useState<CategoryId>('other');
+  const [editNotes, setEditNotes] = useState('');
+
   const category = useMemo(() => {
     if (!item) return undefined;
     return CATEGORIES.find((c) => c.id === item.category);
   }, [item]);
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(item?.title || '');
-  const [editCategory, setEditCategory] = useState<CategoryId>(item?.category || 'other');
-  const [editNotes, setEditNotes] = useState(item?.notes || '');
+  React.useEffect(() => {
+    if (item) {
+      setEditTitle(item.title);
+      setEditCategory(item.category);
+      setEditNotes(item.notes || '');
+    }
+  }, [item]);
 
   if (!item) {
     return (
