@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -64,7 +64,7 @@ export default function CollectionScreen() {
     return sorted;
   }, [items, searchQuery, selectedCategory, sortBy]);
 
-  const renderItem = ({ item }: { item: MediaItem }) => (
+  const renderItem = useCallback(({ item }: { item: MediaItem }) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() => router.push(`/detail/${item.id}`)}
@@ -77,6 +77,9 @@ export default function CollectionScreen() {
         source={{ uri: item.photoUri }}
         style={styles.cardImage}
         contentFit="cover"
+        cachePolicy="memory-disk"
+        transition={200}
+        recyclingKey={item.id}
       />
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle} numberOfLines={2}>
@@ -87,7 +90,7 @@ export default function CollectionScreen() {
         </Text>
       </View>
     </TouchableOpacity>
-  );
+  ), [router]);
 
   return (
     <View style={styles.container}>
@@ -239,6 +242,16 @@ export default function CollectionScreen() {
           contentContainerStyle={styles.listContent}
           columnWrapperStyle={styles.row}
           showsVerticalScrollIndicator={false}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          updateCellsBatchingPeriod={50}
+          initialNumToRender={8}
+          windowSize={5}
+          getItemLayout={(data, index) => ({
+            length: 200,
+            offset: 200 * Math.floor(index / 2),
+            index,
+          })}
         />
       )}
     </View>

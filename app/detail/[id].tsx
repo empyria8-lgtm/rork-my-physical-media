@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,11 @@ export default function DetailScreen() {
   const { items, updateItem, deleteItem } = useMediaContext();
 
   const item = items.find((i) => i.id === id);
+
+  const category = useMemo(() => {
+    if (!item) return undefined;
+    return CATEGORIES.find((c) => c.id === item.category);
+  }, [item]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(item?.title || '');
@@ -106,7 +111,7 @@ export default function DetailScreen() {
     setIsEditing(false);
   };
 
-  const category = CATEGORIES.find((c) => c.id === item.category);
+
 
   return (
     <View style={styles.container}>
@@ -170,6 +175,8 @@ export default function DetailScreen() {
             source={{ uri: item.photoUri }}
             style={styles.image}
             contentFit="cover"
+            cachePolicy="memory-disk"
+            transition={200}
           />
         </View>
 

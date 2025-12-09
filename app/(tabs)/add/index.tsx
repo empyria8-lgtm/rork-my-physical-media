@@ -36,11 +36,13 @@ export default function AddScreen() {
 
   const compressImage = async (uri: string): Promise<string> => {
     try {
+      console.log('Compressing image for optimal performance...');
       const manipResult = await manipulateAsync(
         uri,
-        [{ resize: { width: 1200 } }],
-        { compress: 0.7, format: SaveFormat.JPEG }
+        [{ resize: { width: 800 } }],
+        { compress: 0.6, format: SaveFormat.JPEG }
       );
+      console.log('Image compressed successfully');
       return manipResult.uri;
     } catch (error) {
       console.error('Failed to compress image:', error);
@@ -72,7 +74,7 @@ export default function AddScreen() {
           mediaTypes: ['images'],
           allowsEditing: true,
           aspect: [1, 1],
-          quality: 0.7,
+          quality: 0.6,
         });
 
         if (!result.canceled && result.assets[0]) {
@@ -132,7 +134,7 @@ export default function AddScreen() {
         mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.7,
+        quality: 0.6,
       });
 
       if (!result.canceled && result.assets[0]) {
@@ -265,6 +267,7 @@ export default function AddScreen() {
               source={{ uri: photoUri }}
               style={styles.photoPreview}
               contentFit="cover"
+              cachePolicy="memory-disk"
             />
             <TouchableOpacity
               style={styles.removePhotoButton}
