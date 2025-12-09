@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
-  Platform,
 } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -25,78 +24,35 @@ export default function BackgroundRemovalScreen() {
   const imageUri = params.uri;
 
   const [selectionMode, setSelectionMode] = useState<SelectionMode>('auto');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processedUri, setProcessedUri] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  const [isProcessing] = useState(false);
+  const [processedUri] = useState<string>('');
+  const [error] = useState<string>('');
 
-  const removeBackground = async () => {
-    if (!imageUri) return;
 
-    setIsProcessing(true);
-    setError('');
-
-    try {
-      const formData = new FormData();
-      
-      if (Platform.OS === 'web') {
-        const response = await fetch(imageUri);
-        const blob = await response.blob();
-        formData.append('image_file', blob, 'image.jpg');
-      } else {
-        formData.append('image_file', {
-          uri: imageUri,
-          type: 'image/jpeg',
-          name: 'image.jpg',
-        } as any);
-      }
-      
-      formData.append('size', 'auto');
-
-      const removeResponse = await fetch('https://api.remove.bg/v1.0/removebg', {
-        method: 'POST',
-        headers: {
-          'X-Api-Key': 'YOUR_REMOVE_BG_API_KEY',
-        },
-        body: formData,
-      });
-
-      if (!removeResponse.ok) {
-        throw new Error('Failed to remove background');
-      }
-
-      const blob = await removeResponse.blob();
-      const reader = new FileReader();
-      
-      reader.onloadend = () => {
-        const base64data = reader.result as string;
-        setProcessedUri(base64data);
-        setIsProcessing(false);
-      };
-      
-      reader.readAsDataURL(blob);
-    } catch (error) {
-      console.error('Background removal error:', error);
-      setError('Unable to remove background. Please try again or use manual selection.');
-      setIsProcessing(false);
-      
-      Alert.alert(
-        'Processing Failed',
-        'We couldn\'t automatically remove the background. You can try:\n\n• Using the rectangle tool to manually select the object\n• Taking a new photo with better lighting\n• Choosing a different image',
-        [{ text: 'OK' }]
-      );
-    }
-  };
 
   const handleAutoDetect = () => {
     setSelectionMode('auto');
-    removeBackground();
+    Alert.alert(
+      'Auto Background Removal',
+      'This feature requires a remove.bg API key (paid service).\n\nFor now, you can use the original photo without background removal. Manual tools are also not yet available.\n\nWould you like to continue with the original photo?',
+      [
+        {
+          text: 'Use Original Photo',
+          onPress: () => router.back(),
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ]
+    );
   };
 
   const handleRectangleSelect = () => {
     setSelectionMode('rectangle');
     Alert.alert(
       'Rectangle Selection',
-      'Draw a rectangle around the object you want to keep. The background outside the rectangle will be removed.',
+      'Manual selection tools are coming soon!\n\nFor now, you can use the photo as-is. Consider editing it in a photo editor before uploading if needed.',
       [{ text: 'Got It' }]
     );
   };
@@ -105,7 +61,7 @@ export default function BackgroundRemovalScreen() {
     setSelectionMode('freeform');
     Alert.alert(
       'Freeform Selection',
-      'Draw around the object you want to keep. The background outside your selection will be removed.',
+      'Manual selection tools are coming soon!\n\nFor now, you can use the photo as-is. Consider editing it in a photo editor before uploading if needed.',
       [{ text: 'Got It' }]
     );
   };
@@ -257,7 +213,7 @@ export default function BackgroundRemovalScreen() {
 
           <View style={styles.hint}>
             <Text style={styles.hintText}>
-              💡 Tip: Start with Auto detect for best results. Use manual tools if needed.
+              ℹ️ Note: Background removal features require additional setup. For now, you can use your photos as-is or edit them in an external app before uploading.
             </Text>
           </View>
         </View>
