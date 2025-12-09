@@ -15,7 +15,7 @@ import { Image } from 'expo-image';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import { Camera, Image as ImageIcon, X, Sparkles } from 'lucide-react-native';
+import { Camera, Image as ImageIcon, X } from 'lucide-react-native';
 import { useMediaContext } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
 import colors from '@/constants/colors';
@@ -130,7 +130,8 @@ export default function AddScreen() {
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
-        allowsEditing: false,
+        allowsEditing: true,
+        aspect: [1, 1],
         quality: 0.7,
       });
 
@@ -146,21 +147,6 @@ export default function AddScreen() {
         [{ text: 'OK' }]
       );
     }
-  };
-
-  const openBackgroundRemoval = () => {
-    if (!photoUri) {
-      Alert.alert(
-        'No Photo',
-        'Please add a photo first before removing the background.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-    router.push({
-      pathname: '/background-removal',
-      params: { uri: photoUri },
-    });
   };
 
   const handleSubmit = async () => {
@@ -274,33 +260,20 @@ export default function AddScreen() {
         contentContainerStyle={styles.content}
       >
         {photoUri ? (
-          <View>
-            <View style={styles.photoPreviewContainer}>
-              <Image
-                source={{ uri: photoUri }}
-                style={styles.photoPreview}
-                contentFit="cover"
-              />
-              <TouchableOpacity
-                style={styles.removePhotoButton}
-                onPress={() => setPhotoUri('')}
-                accessibilityRole="button"
-                accessibilityLabel="Remove photo"
-                accessibilityHint="Removes selected photo"
-              >
-                <X size={18} color={colors.white} />
-              </TouchableOpacity>
-            </View>
-            
+          <View style={styles.photoPreviewContainer}>
+            <Image
+              source={{ uri: photoUri }}
+              style={styles.photoPreview}
+              contentFit="cover"
+            />
             <TouchableOpacity
-              style={styles.bgRemovalButton}
-              onPress={openBackgroundRemoval}
+              style={styles.removePhotoButton}
+              onPress={() => setPhotoUri('')}
               accessibilityRole="button"
-              accessibilityLabel="Remove background"
-              accessibilityHint="Opens AI tool to remove photo background"
+              accessibilityLabel="Remove photo"
+              accessibilityHint="Removes selected photo"
             >
-              <Sparkles size={20} color={colors.primary} />
-              <Text style={styles.bgRemovalButtonText}>Remove Background</Text>
+              <X size={18} color={colors.white} />
             </TouchableOpacity>
           </View>
         ) : (
@@ -558,23 +531,5 @@ const styles = StyleSheet.create({
     height: 64,
     borderRadius: 32,
     backgroundColor: colors.primary,
-  },
-  bgRemovalButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.white,
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginBottom: 24,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  bgRemovalButtonText: {
-    fontSize: 15,
-    fontWeight: '600' as const,
-    color: colors.primary,
   },
 });
