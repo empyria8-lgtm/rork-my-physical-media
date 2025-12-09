@@ -33,15 +33,15 @@ export default function BackgroundRemovalScreen() {
   const handleAutoDetect = () => {
     setSelectionMode('auto');
     Alert.alert(
-      'Auto Background Removal',
-      'This feature requires a remove.bg API key (paid service).\n\nFor now, you can use the original photo without background removal. Manual tools are also not yet available.\n\nWould you like to continue with the original photo?',
+      'Feature Coming Soon',
+      'Automatic background removal is not yet available.\n\nYou can continue with the original photo, or edit it in another app before uploading.',
       [
         {
           text: 'Use Original Photo',
           onPress: () => router.back(),
         },
         {
-          text: 'Cancel',
+          text: 'OK',
           style: 'cancel',
         },
       ]
@@ -51,18 +51,18 @@ export default function BackgroundRemovalScreen() {
   const handleRectangleSelect = () => {
     setSelectionMode('rectangle');
     Alert.alert(
-      'Rectangle Selection',
-      'Manual selection tools are coming soon!\n\nFor now, you can use the photo as-is. Consider editing it in a photo editor before uploading if needed.',
-      [{ text: 'Got It' }]
+      'Feature Coming Soon',
+      'Rectangle selection tool is not yet available.\n\nYou can use the photo as-is or edit it in another app.',
+      [{ text: 'OK' }]
     );
   };
 
   const handleFreeformSelect = () => {
     setSelectionMode('freeform');
     Alert.alert(
-      'Freeform Selection',
-      'Manual selection tools are coming soon!\n\nFor now, you can use the photo as-is. Consider editing it in a photo editor before uploading if needed.',
-      [{ text: 'Got It' }]
+      'Feature Coming Soon',
+      'Freeform selection tool is not yet available.\n\nYou can use the photo as-is or edit it in another app.',
+      [{ text: 'OK' }]
     );
   };
 
@@ -213,7 +213,7 @@ export default function BackgroundRemovalScreen() {
 
           <View style={styles.hint}>
             <Text style={styles.hintText}>
-              ℹ️ Note: Background removal features require additional setup. For now, you can use your photos as-is or edit them in an external app before uploading.
+              ℹ️ Background removal tools are coming soon. For now, use your photos as-is or edit them in an external app before uploading.
             </Text>
           </View>
         </View>
