@@ -9,23 +9,30 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { Camera, Image as ImageIcon, X } from 'lucide-react-native';
 import { useMediaContext } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
 import colors from '@/constants/colors';
+import PermissionPrompt from '@/components/PermissionPrompt';
+import {
+  checkCameraPermission,
+  checkPhotoLibraryPermission,
+  requestCameraPermission,
+  requestPhotoLibraryPermission,
+} from '@/utils/permissions';
 
 export default function AddScreen() {
   const router = useRouter();
   const { addItem } = useMediaContext();
 
   const [showCamera, setShowCamera] = useState(false);
-  const [permission, requestPermission] = useCameraPermissions();
   const [cameraRef, setCameraRef] = useState<CameraView | null>(null);
 
   const [photoUri, setPhotoUri] = useState('');
@@ -33,6 +40,11 @@ export default function AddScreen() {
   const [category, setCategory] = useState<CategoryId>('other');
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [showCameraPermissionPrompt, setShowCameraPermissionPrompt] = useState(false);
+  const [showPhotoPermissionPrompt, setShowPhotoPermissionPrompt] = useState(false);
+  const [isCameraPermissionDenied, setIsCameraPermissionDenied] = useState(false);
+  const [isPhotoPermissionDenied, setIsPhotoPermissionDenied] = useState(false);
 
   const compressImage = async (uri: string): Promise<string> => {
     try {
@@ -57,18 +69,6 @@ export default function AddScreen() {
 
   const takePicture = async () => {
     try {
-      if (!permission?.granted) {
-        const result = await requestPermission();
-        if (!result.granted) {
-          Alert.alert(
-            'Camera Access Needed',
-            'To take photos of your items, please allow camera access in your device settings.',
-            [{ text: 'Got It' }]
-          );
-          return;
-        }
-      }
-
       if (Platform.OS === 'web') {
         const result = await ImagePicker.launchCameraAsync({
           mediaTypes: ['images'],
@@ -81,9 +81,24 @@ export default function AddScreen() {
           const compressed = await compressImage(result.assets[0].uri);
           setPhotoUri(compressed);
         }
-      } else {
-        setShowCamera(true);
+        return;
       }
+
+      const permissionStatus = await checkCameraPermission();
+      
+      if (permissionStatus.status === 'granted') {
+        setShowCamera(true);
+        return;
+      }
+
+      if (permissionStatus.status === 'denied' && !permissionStatus.canAskAgain) {
+        setIsCameraPermissionDenied(true);
+        setShowCameraPermissionPrompt(true);
+        return;
+      }
+
+      setIsCameraPermissionDenied(false);
+      setShowCameraPermissionPrompt(true);
     } catch (error) {
       console.error('Camera error:', error);
       Alert.alert(
@@ -91,6 +106,19 @@ export default function AddScreen() {
         'Unable to open camera. Please try selecting from your gallery instead.',
         [{ text: 'OK' }]
       );
+    }
+  };
+
+  const handleCameraPermissionRequest = async () => {
+    setShowCameraPermissionPrompt(false);
+    
+    const result = await requestCameraPermission();
+    
+    if (result.status === 'granted') {
+      setShowCamera(true);
+    } else {
+      setIsCameraPermissionDenied(true);
+      setShowCameraPermissionPrompt(true);
     }
   };
 
@@ -116,31 +144,46 @@ export default function AddScreen() {
 
   const pickFromGallery = async () => {
     try {
-      const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
-      
-      if (status !== 'granted') {
-        const { status: newStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (newStatus !== 'granted') {
-          Alert.alert(
-            'Gallery Access Needed',
-            'To select photos, please allow photo library access in your device settings.',
-            [{ text: 'Got It' }]
-          );
-          return;
+      if (Platform.OS === 'web') {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ['images'],
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.6,
+        });
+
+        if (!result.canceled && result.assets[0]) {
+          const compressed = await compressImage(result.assets[0].uri);
+          setPhotoUri(compressed);
         }
+        return;
       }
 
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.6,
-      });
+      const permissionStatus = await checkPhotoLibraryPermission();
+      
+      if (permissionStatus.status === 'granted') {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ['images'],
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.6,
+        });
 
-      if (!result.canceled && result.assets[0]) {
-        const compressed = await compressImage(result.assets[0].uri);
-        setPhotoUri(compressed);
+        if (!result.canceled && result.assets[0]) {
+          const compressed = await compressImage(result.assets[0].uri);
+          setPhotoUri(compressed);
+        }
+        return;
       }
+
+      if (permissionStatus.status === 'denied' && !permissionStatus.canAskAgain) {
+        setIsPhotoPermissionDenied(true);
+        setShowPhotoPermissionPrompt(true);
+        return;
+      }
+
+      setIsPhotoPermissionDenied(false);
+      setShowPhotoPermissionPrompt(true);
     } catch (error) {
       console.error('Gallery error:', error);
       Alert.alert(
@@ -148,6 +191,29 @@ export default function AddScreen() {
         'Unable to access your photo library. Please check your permissions and try again.',
         [{ text: 'OK' }]
       );
+    }
+  };
+
+  const handlePhotoPermissionRequest = async () => {
+    setShowPhotoPermissionPrompt(false);
+    
+    const result = await requestPhotoLibraryPermission();
+    
+    if (result.status === 'granted') {
+      const pickerResult = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.6,
+      });
+
+      if (!pickerResult.canceled && pickerResult.assets[0]) {
+        const compressed = await compressImage(pickerResult.assets[0].uri);
+        setPhotoUri(compressed);
+      }
+    } else {
+      setIsPhotoPermissionDenied(true);
+      setShowPhotoPermissionPrompt(true);
     }
   };
 
@@ -188,7 +254,7 @@ export default function AddScreen() {
       Alert.alert('✅ Item Added!', 'Your item has been saved to your collection.', [
         {
           text: 'View Collection',
-          onPress: () => router.push('/(tabs)/collection'),
+          onPress: () => router.push('/collection' as any),
         },
         {
           text: 'Add Another',
@@ -241,7 +307,36 @@ export default function AddScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <>
+      <Modal
+        visible={showCameraPermissionPrompt}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowCameraPermissionPrompt(false)}
+      >
+        <PermissionPrompt
+          type="camera"
+          onRequestPermission={handleCameraPermissionRequest}
+          onCancel={() => setShowCameraPermissionPrompt(false)}
+          isDenied={isCameraPermissionDenied}
+        />
+      </Modal>
+
+      <Modal
+        visible={showPhotoPermissionPrompt}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowPhotoPermissionPrompt(false)}
+      >
+        <PermissionPrompt
+          type="photos"
+          onRequestPermission={handlePhotoPermissionRequest}
+          onCancel={() => setShowPhotoPermissionPrompt(false)}
+          isDenied={isPhotoPermissionDenied}
+        />
+      </Modal>
+
+      <View style={styles.container}>
       <Stack.Screen
         options={{
           title: 'Add Item',
@@ -379,6 +474,7 @@ export default function AddScreen() {
         </TouchableOpacity>
       </ScrollView>
     </View>
+    </>
   );
 }
 

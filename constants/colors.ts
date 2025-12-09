@@ -10,6 +10,7 @@ const colors = {
   white: '#FFFFFF',
   shadow: 'rgba(107, 79, 79, 0.1)',
   border: 'rgba(255, 155, 155, 0.2)',
+  error: '#FF6B6B',
 };
 
 export default colors;
