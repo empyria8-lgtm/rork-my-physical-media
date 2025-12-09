@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Grid3x3, Plus } from "lucide-react-native";
+import { Grid3x3, Plus, Settings } from "lucide-react-native";
 import React from "react";
 
 import colors from "@/constants/colors";
@@ -37,6 +37,13 @@ export default function TabLayout() {
         options={{
           title: "Add New",
           tabBarIcon: ({ color }) => <Plus size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color }) => <Settings size={24} color={color} />,
         }}
       />
     </Tabs>
