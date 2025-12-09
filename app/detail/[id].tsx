@@ -13,11 +13,12 @@ import { Image } from 'expo-image';
 import { Pencil, Trash2 } from 'lucide-react-native';
 import { useMediaContext } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
-import colors from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function DetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { colors } = useTheme();
   const { items, updateItem, deleteItem } = useMediaContext();
 
   const item = items.find((i) => i.id === id);
@@ -39,6 +40,8 @@ export default function DetailScreen() {
       setEditNotes(item.notes || '');
     }
   }, [item]);
+
+  const styles = createStyles(colors);
 
   if (!item) {
     return (
@@ -118,8 +121,6 @@ export default function DetailScreen() {
     setEditNotes(item.notes || '');
     setIsEditing(false);
   };
-
-
 
   return (
     <View style={styles.container}>
@@ -274,7 +275,7 @@ export default function DetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

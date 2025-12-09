@@ -14,7 +14,7 @@ import { Image } from 'expo-image';
 import { Search, Plus, ArrowUpDown } from 'lucide-react-native';
 import { useMediaContext, SortOption } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
-import colors from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import { MediaItem } from '@/types/media';
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
@@ -26,6 +26,7 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
 
 export default function CollectionScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
@@ -64,6 +65,8 @@ export default function CollectionScreen() {
     return sorted;
   }, [items, searchQuery, selectedCategory, sortBy]);
 
+  const styles = createStyles(colors);
+
   const renderItem = useCallback(({ item }: { item: MediaItem }) => (
     <TouchableOpacity
       style={styles.card}
@@ -90,7 +93,7 @@ export default function CollectionScreen() {
         </Text>
       </View>
     </TouchableOpacity>
-  ), [router]);
+  ), [router, styles]);
 
   return (
     <View style={styles.container}>
@@ -258,7 +261,7 @@ export default function CollectionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

@@ -9,12 +9,13 @@ import {
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Sparkles } from 'lucide-react-native';
-import colors from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const ONBOARDING_KEY = 'onboarding_complete';
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
 
   const handleContinue = async () => {
     try {
@@ -24,6 +25,8 @@ export default function OnboardingScreen() {
       console.error('Failed to save onboarding data:', error);
     }
   };
+
+  const styles = createStyles(colors);
 
   return (
     <View style={styles.container}>
@@ -89,7 +92,7 @@ export default function OnboardingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

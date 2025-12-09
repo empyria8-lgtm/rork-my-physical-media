@@ -19,7 +19,7 @@ import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { Camera, Image as ImageIcon, X } from 'lucide-react-native';
 import { useMediaContext } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
-import colors from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import PermissionPrompt from '@/components/PermissionPrompt';
 import {
   checkCameraPermission,
@@ -30,6 +30,7 @@ import {
 
 export default function AddScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { addItem } = useMediaContext();
 
   const [showCamera, setShowCamera] = useState(false);
@@ -276,6 +277,8 @@ export default function AddScreen() {
     }
   };
 
+  const styles = createStyles(colors);
+
   if (showCamera && Platform.OS !== 'web') {
     return (
       <View style={styles.cameraContainer}>
@@ -476,7 +479,7 @@ export default function AddScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

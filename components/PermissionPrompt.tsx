@@ -8,7 +8,7 @@ import {
   Linking,
 } from 'react-native';
 import { Camera, Image as ImageIcon, Bell, AlertCircle } from 'lucide-react-native';
-import colors from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type PermissionType = 'camera' | 'photos' | 'notifications';
 
@@ -49,6 +49,7 @@ export default function PermissionPrompt({
   onCancel,
   isDenied = false,
 }: PermissionPromptProps) {
+  const { colors } = useTheme();
   const info = PERMISSION_INFO[type];
   const Icon = info.icon;
 
@@ -59,6 +60,8 @@ export default function PermissionPrompt({
       Linking.openSettings();
     }
   };
+
+  const styles = createStyles(colors);
 
   return (
     <View style={styles.container}>
@@ -138,7 +141,7 @@ export default function PermissionPrompt({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

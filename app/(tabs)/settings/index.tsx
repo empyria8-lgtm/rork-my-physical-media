@@ -8,10 +8,11 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronRight, Shield, FileText, Database } from 'lucide-react-native';
-import colors from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
 
   const legalItems = [
     {
@@ -36,6 +37,8 @@ export default function SettingsScreen() {
       route: '/(tabs)/settings/data',
     },
   ];
+
+  const styles = createStyles(colors);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -88,7 +91,7 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

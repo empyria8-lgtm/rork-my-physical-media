@@ -2,9 +2,11 @@ import { Tabs } from "expo-router";
 import { Grid3x3, Plus, Settings } from "lucide-react-native";
 import React from "react";
 
-import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function TabLayout() {
+  const { colors } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
@@ -12,7 +14,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: colors.textLight,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colors.white,
+          backgroundColor: colors.card,
           borderTopWidth: 1,
           borderTopColor: colors.border,
           height: 88,

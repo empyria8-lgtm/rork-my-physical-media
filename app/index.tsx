@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Redirect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import colors from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const ONBOARDING_KEY = 'onboarding_complete';
 
 export default function Index() {
+  const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 
@@ -25,6 +26,8 @@ export default function Index() {
     }
   };
 
+  const styles = createStyles(colors);
+
   if (isLoading) {
     return (
       <View style={styles.container}>
@@ -40,7 +43,7 @@ export default function Index() {
   return <Redirect href="/onboarding" />;
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',

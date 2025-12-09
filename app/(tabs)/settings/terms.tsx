@@ -5,9 +5,12 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import colors from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function TermsOfUseScreen() {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.lastUpdated}>Last Updated: December 9, 2024</Text>
@@ -172,7 +175,7 @@ export default function TermsOfUseScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
