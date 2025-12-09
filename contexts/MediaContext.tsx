@@ -7,7 +7,6 @@ import type { MediaItem } from '@/types/media';
 const STORAGE_KEY = 'media_collection';
 const STORAGE_VERSION_KEY = 'media_collection_version';
 const DEVICE_ID_KEY = 'device_id';
-const USER_MODE_KEY = 'user_mode';
 const CURRENT_VERSION = '1.0.0';
 const MAX_RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 500;
