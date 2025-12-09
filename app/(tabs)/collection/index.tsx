@@ -137,14 +137,21 @@ export default function CollectionScreen() {
               Organize your physical media library.{' \n'}
               Add books, vinyl, CDs, games & more.
             </Text>
-            <View style={styles.emptyHint}>
+            <TouchableOpacity
+              style={styles.emptyHint}
+              onPress={() => router.push('/(tabs)/add')}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Add your first item"
+              accessibilityHint="Navigate to add new item screen"
+            >
               <View style={styles.emptyHintIcon}>
                 <Plus size={16} color={colors.white} strokeWidth={2.5} />
               </View>
               <Text style={styles.emptyHintText}>
-                Tap the + button below to add your first item
+                Tap here to add your first item
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.emptyState}>
