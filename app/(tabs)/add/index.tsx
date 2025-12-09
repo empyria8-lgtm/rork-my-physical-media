@@ -171,7 +171,7 @@ export default function AddScreen() {
     setIsSubmitting(true);
 
     try {
-      addItem({
+      await addItem({
         title: title.trim(),
         category,
         photoUri,
@@ -231,7 +231,7 @@ export default function AddScreen() {
             >
               <View style={styles.captureButtonInner} />
             </TouchableOpacity>
-            <View style={{ width: 60 }} />
+            <View style={styles.cameraButtonPlaceholder} />
           </View>
         </CameraView>
       </View>
@@ -531,5 +531,8 @@ const styles = StyleSheet.create({
     height: 64,
     borderRadius: 32,
     backgroundColor: colors.primary,
+  },
+  cameraButtonPlaceholder: {
+    width: 60,
   },
 });

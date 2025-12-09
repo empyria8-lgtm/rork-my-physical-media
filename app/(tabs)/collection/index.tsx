@@ -7,6 +7,7 @@ import {
   TextInput,
   FlatList,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -20,7 +21,7 @@ export default function CollectionScreen() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
-  const { items } = useMediaContext();
+  const { items, isLoading } = useMediaContext();
 
   const filteredItems = useMemo(() => {
     let filtered = items;
@@ -124,7 +125,12 @@ export default function CollectionScreen() {
         ))}
       </View>
 
-      {filteredItems.length === 0 ? (
+      {isLoading ? (
+        <View style={styles.emptyState}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.emptyText}>Loading your collection...</Text>
+        </View>
+      ) : filteredItems.length === 0 ? (
         items.length === 0 ? (
           <View style={styles.emptyState}>
             <View style={styles.emptyIconContainer}>

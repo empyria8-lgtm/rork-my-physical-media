@@ -61,7 +61,12 @@ export const [MediaProvider, useMediaContext] = createContextHook(() => {
       createdAt: new Date().toISOString(),
     };
     const updated = [...items, newItem];
-    mutate(updated);
+    return new Promise<void>((resolve, reject) => {
+      mutate(updated, {
+        onSuccess: () => resolve(),
+        onError: (error) => reject(error),
+      });
+    });
   }, [items, mutate]);
 
   const updateItem = useCallback((id: string, updates: Partial<MediaItem>) => {
