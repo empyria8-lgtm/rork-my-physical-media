@@ -85,3 +85,62 @@ export function markItemsAsSynced(items: MediaItem[]): MediaItem[] {
     localOnly: false,
   }));
 }
+
+export function prepareItemForCloudUpload(item: MediaItem): MediaItem {
+  return {
+    ...item,
+    backupStatus: 'queued' as const,
+  };
+}
+
+export function updateItemWithCloudUrls(
+  item: MediaItem,
+  cloudStorageUrl: string,
+  thumbnailUrl?: string
+): MediaItem {
+  return {
+    ...item,
+    cloudStorageUrl,
+    thumbnailUrl,
+    backupStatus: 'backed-up' as const,
+    lastBackupAt: new Date().toISOString(),
+  };
+}
+
+export function generateShareToken(): string {
+  return `share-${Date.now()}-${Math.random().toString(36).substr(2, 16)}`;
+}
+
+export function prepareItemForSharing(
+  item: MediaItem,
+  isPublic: boolean = false,
+  sharedWith: string[] = []
+): MediaItem {
+  return {
+    ...item,
+    shareToken: item.shareToken || generateShareToken(),
+    isPublic,
+    sharedWith: isPublic ? undefined : sharedWith,
+  };
+}
+
+export function filterItemsByUserId(
+  items: MediaItem[],
+  userId: string
+): MediaItem[] {
+  return items.filter(item => item.userId === userId);
+}
+
+export function migrateGuestDataToUser(
+  items: MediaItem[],
+  userId: string,
+  deviceId: string
+): MediaItem[] {
+  return items.map(item => ({
+    ...item,
+    userId,
+    syncStatus: 'pending' as const,
+    version: item.version + 1,
+    updatedAt: new Date().toISOString(),
+  }));
+}

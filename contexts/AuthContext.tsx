@@ -5,6 +5,7 @@ import { getUserMode, setUserMode, type UserMode } from '@/utils/sync';
 export const [AuthProvider, useAuth] = createContextHook(() => {
   const [mode, setMode] = useState<UserMode>('guest');
   const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     initializeAuth();
@@ -34,8 +35,16 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
     }
   }, []);
 
-  const loginWithAccount = useCallback(async () => {
-    console.log('Account login not yet implemented');
+  const loginWithAccount = useCallback(async (userIdParam: string) => {
+    try {
+      console.log('Logging in with account:', userIdParam);
+      await setUserMode('authenticated');
+      setMode('authenticated');
+      setUserId(userIdParam);
+    } catch (error) {
+      console.error('Failed to login with account:', error);
+      throw error;
+    }
   }, []);
 
   const logout = useCallback(async () => {
@@ -43,6 +52,7 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
       console.log('Logging out, setting guest mode...');
       await setUserMode('guest');
       setMode('guest');
+      setUserId(null);
     } catch (error) {
       console.error('Failed to logout:', error);
     }
@@ -53,6 +63,7 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
     isLoading,
     isGuest: mode === 'guest',
     isAuthenticated: mode === 'authenticated',
+    userId,
     loginAsGuest,
     loginWithAccount,
     logout,
