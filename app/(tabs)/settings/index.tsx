@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronRight, Shield, FileText, Database } from 'lucide-react-native';
+import { ChevronRight, Shield, FileText, Database, Mail } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function SettingsScreen() {
@@ -71,6 +71,21 @@ export default function SettingsScreen() {
               </TouchableOpacity>
             );
           })}
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Support</Text>
+        <View style={styles.itemsContainer}>
+          <View style={styles.supportItem}>
+            <View style={styles.iconContainer}>
+              <Mail size={22} color={colors.primary} />
+            </View>
+            <View style={styles.supportContent}>
+              <Text style={styles.supportText}>Have questions, suggestions?</Text>
+              <Text style={styles.supportEmail}>empyria8@gmail.com</Text>
+            </View>
+          </View>
         </View>
       </View>
 
@@ -166,5 +181,24 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     fontSize: 16,
     fontWeight: '600' as const,
     color: colors.textLight,
+  },
+  supportItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  supportContent: {
+    flex: 1,
+  },
+  supportText: {
+    fontSize: 15,
+    fontWeight: '500' as const,
+    color: colors.text,
+    marginBottom: 6,
+  },
+  supportEmail: {
+    fontSize: 15,
+    fontWeight: '600' as const,
+    color: colors.primary,
   },
 });
