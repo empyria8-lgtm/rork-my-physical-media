@@ -23,7 +23,7 @@
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone",
         "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos"
-      }"NSPhotoLibraryAddUsageDescription": "My Physical Media needs permission to save photos of your media items to your photo library."
+      }"NSPhotoLibraryAddUsageDescription": "My Physical Media needs permission to save photos of your media items to your photo library.",
     },
     "android": {
       "package": "app.rork.myphysicalmedia",
