@@ -11,16 +11,25 @@ import {
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import { Search, Plus } from 'lucide-react-native';
-import { useMediaContext } from '@/contexts/MediaContext';
+import { Search, Plus, ArrowUpDown } from 'lucide-react-native';
+import { useMediaContext, SortOption } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
 import colors from '@/constants/colors';
 import { MediaItem } from '@/types/media';
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'newest', label: 'Newest First' },
+  { value: 'oldest', label: 'Oldest First' },
+  { value: 'title-asc', label: 'A to Z' },
+  { value: 'title-desc', label: 'Z to A' },
+];
 
 export default function CollectionScreen() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [showSortMenu, setShowSortMenu] = useState(false);
   const { items, isLoading } = useMediaContext();
 
   const filteredItems = useMemo(() => {
@@ -37,8 +46,23 @@ export default function CollectionScreen() {
       );
     }
 
-    return filtered;
-  }, [items, searchQuery, selectedCategory]);
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'oldest':
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case 'title-asc':
+          return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+        case 'title-desc':
+          return b.title.toLowerCase().localeCompare(a.title.toLowerCase());
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [items, searchQuery, selectedCategory, sortBy]);
 
   const renderItem = ({ item }: { item: MediaItem }) => (
     <TouchableOpacity
@@ -94,7 +118,45 @@ export default function CollectionScreen() {
             accessibilityLabel="Search collection by title"
             accessibilityHint="Type to filter your media items"
           />
+          <TouchableOpacity
+            onPress={() => setShowSortMenu(!showSortMenu)}
+            style={styles.sortButton}
+            accessibilityRole="button"
+            accessibilityLabel="Sort options"
+            accessibilityHint="Tap to change sorting order"
+          >
+            <ArrowUpDown size={18} color={colors.text} />
+          </TouchableOpacity>
         </View>
+        {showSortMenu && (
+          <View style={styles.sortMenu}>
+            {SORT_OPTIONS.map((option) => (
+              <TouchableOpacity
+                key={option.value}
+                style={[
+                  styles.sortOption,
+                  sortBy === option.value && styles.sortOptionActive,
+                ]}
+                onPress={() => {
+                  setSortBy(option.value);
+                  setShowSortMenu(false);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={`Sort by ${option.label}`}
+                accessibilityState={{ selected: sortBy === option.value }}
+              >
+                <Text
+                  style={[
+                    styles.sortOptionText,
+                    sortBy === option.value && styles.sortOptionTextActive,
+                  ]}
+                >
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       </View>
 
       <View style={styles.filterContainer}>
@@ -206,6 +268,33 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: colors.text,
+  },
+  sortButton: {
+    padding: 4,
+  },
+  sortMenu: {
+    marginTop: 8,
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  sortOption: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.background,
+  },
+  sortOptionActive: {
+    backgroundColor: colors.cream,
+  },
+  sortOptionText: {
+    fontSize: 15,
+    fontWeight: '500' as const,
+    color: colors.text,
+  },
+  sortOptionTextActive: {
+    fontWeight: '600' as const,
+    color: colors.primary,
   },
   filterContainer: {
     flexDirection: 'row',

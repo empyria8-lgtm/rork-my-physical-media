@@ -10,7 +10,25 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: Infinity,
+      gcTime: Infinity,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+      networkMode: 'offlineFirst',
+    },
+    mutations: {
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(500 * 2 ** attemptIndex, 5000),
+      networkMode: 'offlineFirst',
+    },
+  },
+});
 
 function RootLayoutNav() {
   return (
