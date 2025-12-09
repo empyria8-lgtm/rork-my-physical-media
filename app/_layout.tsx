@@ -8,6 +8,7 @@ import { Image } from 'expo-image';
 import { MediaProvider } from "@/contexts/MediaContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -73,9 +74,11 @@ export default function RootLayout() {
         <ThemeProvider>
           <GestureHandlerRootView style={styles.container}>
             <AuthProvider>
-              <MediaProvider>
-                <RootLayoutNav />
-              </MediaProvider>
+              <UserProfileProvider>
+                <MediaProvider>
+                  <RootLayoutNav />
+                </MediaProvider>
+              </UserProfileProvider>
             </AuthProvider>
           </GestureHandlerRootView>
         </ThemeProvider>

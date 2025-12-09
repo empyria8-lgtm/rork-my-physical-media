@@ -144,3 +144,61 @@ export function migrateGuestDataToUser(
     updatedAt: new Date().toISOString(),
   }));
 }
+
+export interface SyncPayload {
+  items: MediaItem[];
+  timestamp: string;
+  deviceId: string;
+  userId: string;
+}
+
+export interface SyncResponse {
+  items: MediaItem[];
+  conflicts: MediaItem[];
+  serverTimestamp: string;
+}
+
+export async function syncWithCloud(
+  localItems: MediaItem[],
+  userId: string,
+  deviceId: string
+): Promise<SyncResponse | null> {
+  console.log('Cloud sync ready for future backend integration');
+  console.log('Syncing', localItems.length, 'items for user:', userId);
+  return null;
+}
+
+export async function uploadImage(
+  localUri: string,
+  itemId: string,
+  userId: string
+): Promise<{ cloudUrl: string; thumbnailUrl: string } | null> {
+  console.log('Image upload ready for future cloud storage integration');
+  console.log('Uploading image for item:', itemId);
+  return null;
+}
+
+export async function downloadImage(
+  cloudUrl: string,
+  itemId: string
+): Promise<string | null> {
+  console.log('Image download ready for future cloud storage integration');
+  console.log('Downloading image for item:', itemId);
+  return null;
+}
+
+export function shouldSyncItem(item: MediaItem): boolean {
+  return item.syncStatus === 'pending' || item.syncStatus === 'local';
+}
+
+export function getItemsNeedingSync(items: MediaItem[]): MediaItem[] {
+  return items.filter(shouldSyncItem);
+}
+
+export function getItemsNeedingImageUpload(items: MediaItem[]): MediaItem[] {
+  return items.filter(item => 
+    item.photoUri && 
+    !item.cloudStorageUrl &&
+    item.photoUri.startsWith('file://')
+  );
+}
