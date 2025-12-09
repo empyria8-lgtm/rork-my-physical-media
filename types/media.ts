@@ -7,4 +7,11 @@ export interface MediaItem {
   photoUri: string;
   notes?: string;
   createdAt: string;
+  updatedAt: string;
+  localOnly: boolean;
+  syncStatus: 'synced' | 'pending' | 'conflict' | 'local';
+  userId?: string;
+  deviceId: string;
+  version: number;
+  deletedAt?: string;
 }

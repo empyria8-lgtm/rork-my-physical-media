@@ -6,6 +6,7 @@ import { StyleSheet, AppState } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Image } from 'expo-image';
 import { MediaProvider } from "@/contexts/MediaContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -64,9 +65,11 @@ export default function RootLayout() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <GestureHandlerRootView style={styles.container}>
-          <MediaProvider>
-            <RootLayoutNav />
-          </MediaProvider>
+          <AuthProvider>
+            <MediaProvider>
+              <RootLayoutNav />
+            </MediaProvider>
+          </AuthProvider>
         </GestureHandlerRootView>
       </QueryClientProvider>
     </ErrorBoundary>

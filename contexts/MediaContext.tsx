@@ -6,9 +6,27 @@ import type { MediaItem } from '@/types/media';
 
 const STORAGE_KEY = 'media_collection';
 const STORAGE_VERSION_KEY = 'media_collection_version';
+const DEVICE_ID_KEY = 'device_id';
+const USER_MODE_KEY = 'user_mode';
 const CURRENT_VERSION = '1.0.0';
 const MAX_RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 500;
+
+async function getOrCreateDeviceId(): Promise<string> {
+  try {
+    const existing = await AsyncStorage.getItem(DEVICE_ID_KEY);
+    if (existing) {
+      return existing;
+    }
+    const deviceId = `device-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId);
+    console.log('Created new device ID:', deviceId);
+    return deviceId;
+  } catch (error) {
+    console.error('Failed to get/create device ID:', error);
+    return `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  }
+}
 
 async function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -33,8 +51,24 @@ async function loadMediaItems(): Promise<MediaItem[]> {
         return [];
       }
 
-      const items = JSON.parse(stored) as MediaItem[];
+      let items = JSON.parse(stored) as MediaItem[];
       console.log('Loaded', items.length, 'items from storage');
+      
+      const deviceId = await getOrCreateDeviceId();
+      items = items.map(item => ({
+        ...item,
+        updatedAt: item.updatedAt || item.createdAt,
+        localOnly: item.localOnly ?? true,
+        syncStatus: item.syncStatus || 'local',
+        deviceId: item.deviceId || deviceId,
+        version: item.version || 1,
+      }));
+      
+      const needsMigration = items.some(item => !item.deviceId || !item.updatedAt);
+      if (needsMigration) {
+        console.log('Migrating items to new schema');
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      }
       
       if (!version) {
         await AsyncStorage.setItem(STORAGE_VERSION_KEY, CURRENT_VERSION);
@@ -111,11 +145,18 @@ export const [MediaProvider, useMediaContext] = createContextHook(() => {
 
   const items = useMemo(() => mediaQuery.data ?? [], [mediaQuery.data]);
 
-  const addItem = useCallback((item: Omit<MediaItem, 'id' | 'createdAt'>) => {
+  const addItem = useCallback(async (item: Omit<MediaItem, 'id' | 'createdAt' | 'updatedAt' | 'localOnly' | 'syncStatus' | 'deviceId' | 'version'>) => {
+    const deviceId = await getOrCreateDeviceId();
+    const now = new Date().toISOString();
     const newItem: MediaItem = {
       ...item,
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date().toISOString(),
+      createdAt: now,
+      updatedAt: now,
+      localOnly: true,
+      syncStatus: 'local',
+      deviceId,
+      version: 1,
     };
     console.log('Adding new item:', newItem.id, newItem.title);
     const updated = [...items, newItem];
@@ -135,9 +176,18 @@ export const [MediaProvider, useMediaContext] = createContextHook(() => {
 
   const updateItem = useCallback((id: string, updates: Partial<MediaItem>) => {
     console.log('Updating item:', id, updates);
-    const updated = items.map(item => 
-      item.id === id ? { ...item, ...updates } : item
-    );
+    const updated = items.map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          ...updates,
+          updatedAt: new Date().toISOString(),
+          version: item.version + 1,
+          syncStatus: 'pending' as const,
+        };
+      }
+      return item;
+    });
     mutate(updated, {
       onSuccess: () => console.log('Item updated successfully'),
       onError: (error) => console.error('Failed to update item:', error),
@@ -146,7 +196,19 @@ export const [MediaProvider, useMediaContext] = createContextHook(() => {
 
   const deleteItem = useCallback((id: string) => {
     console.log('Deleting item:', id);
-    const updated = items.filter(item => item.id !== id);
+    const now = new Date().toISOString();
+    const updated = items.map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          deletedAt: now,
+          updatedAt: now,
+          version: item.version + 1,
+          syncStatus: 'pending' as const,
+        };
+      }
+      return item;
+    }).filter(item => !item.deletedAt);
     mutate(updated, {
       onSuccess: () => console.log('Item deleted successfully'),
       onError: (error) => console.error('Failed to delete item:', error),
