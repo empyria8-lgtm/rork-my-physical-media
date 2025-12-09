@@ -137,14 +137,17 @@ export default function CollectionScreen() {
               Organize your physical media library.{' \n'}
               Add books, vinyl, CDs, games & more.
             </Text>
-            <View style={styles.emptyHint}>
-              <View style={styles.emptyHintIcon}>
-                <Plus size={16} color={colors.white} strokeWidth={2.5} />
-              </View>
-              <Text style={styles.emptyHintText}>
-                Tap the + button below to add your first item
-              </Text>
-            </View>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => router.push('/(tabs)/add')}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Add your first item"
+              accessibilityHint="Opens the form to add a new item to your collection"
+            >
+              <Plus size={20} color={colors.white} strokeWidth={2.5} />
+              <Text style={styles.addButtonText}>Add Your First Item</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.emptyState}>
@@ -288,27 +291,19 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: 32,
   },
-  emptyHint: {
+  addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    gap: 10,
-  },
-  emptyHintIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.text,
     justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: colors.text,
+    paddingVertical: 16,
+    paddingHorizontal: 28,
+    borderRadius: 12,
+    gap: 8,
   },
-  emptyHintText: {
-    flex: 1,
-    fontSize: 15,
-    color: colors.text,
-    fontWeight: '600' as const,
+  addButtonText: {
+    fontSize: 17,
+    color: colors.white,
+    fontWeight: '700' as const,
   },
 });
