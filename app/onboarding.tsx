@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Href } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Sparkles } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -20,7 +20,7 @@ export default function OnboardingScreen() {
   const handleContinue = async () => {
     try {
       await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
-      router.replace('/(tabs)/collection');
+      router.replace('/(tabs)/collection' as Href);
     } catch (error) {
       console.error('Failed to save onboarding data:', error);
     }

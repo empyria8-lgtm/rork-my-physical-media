@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { Redirect } from 'expo-router';
+import { Redirect, Href } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -37,10 +37,10 @@ export default function Index() {
   }
 
   if (hasCompletedOnboarding) {
-    return <Redirect href="/(tabs)/collection" />;
+    return <Redirect href={"/(tabs)/collection" as Href} />;
   }
 
-  return <Redirect href="/onboarding" />;
+  return <Redirect href={"/onboarding" as Href} />;
 }
 
 const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({

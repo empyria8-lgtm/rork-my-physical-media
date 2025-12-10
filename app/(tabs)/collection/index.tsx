@@ -9,7 +9,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, Href } from 'expo-router';
 import { Image } from 'expo-image';
 import { Search, Plus, ArrowUpDown } from 'lucide-react-native';
 import { useMediaContext, SortOption } from '@/contexts/MediaContext';
@@ -70,7 +70,7 @@ export default function CollectionScreen() {
   const renderItem = useCallback(({ item }: { item: MediaItem }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => router.push(`/detail/${item.id}`)}
+      onPress={() => router.push(`/detail/${item.id}` as Href)}
       activeOpacity={0.7}
       accessibilityRole="button"
       accessibilityLabel={`View ${item.title} details`}
@@ -213,7 +213,7 @@ export default function CollectionScreen() {
             </Text>
             <TouchableOpacity
               style={styles.emptyHint}
-              onPress={() => router.push('/(tabs)/add')}
+              onPress={() => router.push('/(tabs)/add' as Href)}
               activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel="Add your first item"

@@ -1,4 +1,4 @@
-import { Link, Stack } from 'expo-router';
+import { Link, Stack, Href } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import colors from '@/constants/colors';
 
@@ -10,7 +10,7 @@ export default function NotFoundScreen() {
         <Text style={styles.emoji}>🔍</Text>
         <Text style={styles.title}>Page not found</Text>
 
-        <Link href="/(tabs)/collection" style={styles.link}>
+        <Link href={"/(tabs)/collection" as Href} style={styles.link}>
           <Text style={styles.linkText}>Go to collection</Text>
         </Link>
       </View>
