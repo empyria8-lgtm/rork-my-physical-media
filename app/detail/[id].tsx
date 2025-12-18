@@ -11,7 +11,6 @@ import {
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Pencil, Trash2 } from 'lucide-react-native';
-import { BlurView } from 'expo-blur';
 import { useMediaContext } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -194,16 +193,14 @@ export default function DetailScreen() {
           <View style={styles.section}>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Title</Text>
-              <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.input}>
-                <TextInput
-                  style={styles.inputText}
-                  value={editTitle}
-                  onChangeText={setEditTitle}
-                  placeholder="Item title"
-                  placeholderTextColor={colors.textLight}
-                  accessibilityLabel="Edit item title"
-                />
-              </BlurView>
+              <TextInput
+                style={styles.input}
+                value={editTitle}
+                onChangeText={setEditTitle}
+                placeholder="Item title"
+                placeholderTextColor={colors.textLight}
+                accessibilityLabel="Edit item title"
+              />
             </View>
 
             <View style={styles.inputGroup}>
@@ -221,20 +218,14 @@ export default function DetailScreen() {
                     accessibilityLabel={`Select ${cat.label} category`}
                     accessibilityState={{ selected: editCategory === cat.id }}
                   >
-                    <BlurView
-                      intensity={editCategory === cat.id ? 0 : 60}
-                      tint={colors.white === '#FFFFFF' ? 'light' : 'dark'}
-                      style={styles.categoryChipBlur}
+                    <Text
+                      style={[
+                        styles.categoryText,
+                        editCategory === cat.id && styles.categoryTextActive,
+                      ]}
                     >
-                      <Text
-                        style={[
-                          styles.categoryText,
-                          editCategory === cat.id && styles.categoryTextActive,
-                        ]}
-                      >
-                        {cat.emoji} {cat.label}
-                      </Text>
-                    </BlurView>
+                      {cat.emoji} {cat.label}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -242,19 +233,17 @@ export default function DetailScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Notes</Text>
-              <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={[styles.input, styles.textArea]}>
-                <TextInput
-                  style={[styles.inputText, styles.textAreaText]}
-                  value={editNotes}
-                  onChangeText={setEditNotes}
-                  placeholder="Add notes..."
-                  placeholderTextColor={colors.textLight}
-                  multiline
-                  numberOfLines={6}
-                  textAlignVertical="top"
-                  accessibilityLabel="Edit item notes"
-                />
-              </BlurView>
+              <TextInput
+                style={[styles.input, styles.textArea]}
+                value={editNotes}
+                onChangeText={setEditNotes}
+                placeholder="Add notes..."
+                placeholderTextColor={colors.textLight}
+                multiline
+                numberOfLines={6}
+                textAlignVertical="top"
+                accessibilityLabel="Edit item notes"
+              />
             </View>
           </View>
         ) : (
@@ -275,9 +264,9 @@ export default function DetailScreen() {
             </View>
 
             {item.notes && (
-              <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.notesContainer}>
+              <View style={styles.notesContainer}>
                 <Text style={styles.notesText}>{item.notes}</Text>
-              </BlurView>
+              </View>
             )}
           </View>
         )}
@@ -348,11 +337,9 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     color: colors.textLight,
   },
   notesContainer: {
-    borderRadius: 16,
+    backgroundColor: colors.white,
+    borderRadius: 12,
     padding: 16,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
   },
   notesText: {
     fontSize: 16,
@@ -369,14 +356,12 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     marginBottom: 10,
   },
   input: {
-    borderRadius: 16,
+    backgroundColor: colors.white,
+    borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
     color: colors.text,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
   },
   textArea: {
     minHeight: 120,
@@ -390,14 +375,11 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   categoryChip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
+    borderRadius: 16,
+    backgroundColor: colors.white,
   },
   categoryChipActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.text,
   },
   categoryText: {
     fontSize: 13,
@@ -415,17 +397,5 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   notFoundText: {
     fontSize: 16,
     color: colors.textLight,
-  },
-  inputText: {
-    fontSize: 15,
-    color: colors.text,
-    width: '100%',
-  },
-  textAreaText: {
-    minHeight: 120,
-  },
-  categoryChipBlur: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
   },
 });

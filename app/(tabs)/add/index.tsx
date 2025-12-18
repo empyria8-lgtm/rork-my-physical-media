@@ -17,7 +17,6 @@ import { CameraView } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { Camera, Image as ImageIcon, X } from 'lucide-react-native';
-import { BlurView } from 'expo-blur';
 import { useMediaContext } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -385,10 +384,8 @@ export default function AddScreen() {
               accessibilityLabel="Take photo with camera"
               accessibilityHint="Opens camera to capture item photo"
             >
-              <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.photoButtonBlur}>
-                <Camera size={28} color={colors.text} />
-                <Text style={styles.photoButtonText}>Take Photo</Text>
-              </BlurView>
+              <Camera size={28} color={colors.text} />
+              <Text style={styles.photoButtonText}>Take Photo</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -398,27 +395,23 @@ export default function AddScreen() {
               accessibilityLabel="Choose photo from gallery"
               accessibilityHint="Opens photo library to select image"
             >
-              <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.photoButtonBlur}>
-                <ImageIcon size={28} color={colors.text} />
-                <Text style={styles.photoButtonText}>Choose Photo</Text>
-              </BlurView>
+              <ImageIcon size={28} color={colors.text} />
+              <Text style={styles.photoButtonText}>Choose Photo</Text>
             </TouchableOpacity>
           </View>
         )}
 
         <View style={styles.section}>
           <Text style={styles.label}>Title</Text>
-          <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.input}>
-            <TextInput
-              style={styles.inputText}
-              placeholder="Enter title"
-              placeholderTextColor={colors.textLight}
-              value={title}
-              onChangeText={setTitle}
-              accessibilityLabel="Item title"
-              accessibilityHint="Enter a title for your media item"
-            />
-          </BlurView>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter title"
+            placeholderTextColor={colors.textLight}
+            value={title}
+            onChangeText={setTitle}
+            accessibilityLabel="Item title"
+            accessibilityHint="Enter a title for your media item"
+          />
         </View>
 
         <View style={styles.section}>
@@ -436,20 +429,14 @@ export default function AddScreen() {
                 accessibilityLabel={`Select ${cat.label} category`}
                 accessibilityState={{ selected: category === cat.id }}
               >
-                <BlurView
-                  intensity={category === cat.id ? 0 : 60}
-                  tint={colors.white === '#FFFFFF' ? 'light' : 'dark'}
-                  style={styles.categoryChipBlur}
+                <Text
+                  style={[
+                    styles.categoryText,
+                    category === cat.id && styles.categoryTextActive,
+                  ]}
                 >
-                  <Text
-                    style={[
-                      styles.categoryText,
-                      category === cat.id && styles.categoryTextActive,
-                    ]}
-                  >
-                    {cat.emoji} {cat.label}
-                  </Text>
-                </BlurView>
+                  {cat.emoji} {cat.label}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -457,20 +444,18 @@ export default function AddScreen() {
 
         <View style={styles.section}>
           <Text style={styles.label}>Notes</Text>
-          <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={[styles.input, styles.textArea]}>
-            <TextInput
-              style={[styles.inputText, styles.textAreaText]}
-              placeholder="Optional notes"
-              placeholderTextColor={colors.textLight}
-              value={notes}
-              onChangeText={setNotes}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-              accessibilityLabel="Item notes"
-              accessibilityHint="Enter optional notes about this item"
-            />
-          </BlurView>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            placeholder="Optional notes"
+            placeholderTextColor={colors.textLight}
+            value={notes}
+            onChangeText={setNotes}
+            multiline
+            numberOfLines={4}
+            textAlignVertical="top"
+            accessibilityLabel="Item notes"
+            accessibilityHint="Enter optional notes about this item"
+          />
         </View>
 
         <TouchableOpacity
@@ -521,14 +506,12 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   },
   photoButton: {
     flex: 1,
-    borderRadius: 16,
+    backgroundColor: colors.white,
+    borderRadius: 12,
     padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
   },
   photoButtonText: {
     fontSize: 14,
@@ -561,14 +544,12 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     justifyContent: 'center',
   },
   input: {
-    borderRadius: 16,
+    backgroundColor: colors.white,
+    borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
     color: colors.text,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
   },
   textArea: {
     minHeight: 100,
@@ -582,14 +563,11 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   categoryChip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
+    borderRadius: 16,
+    backgroundColor: colors.white,
   },
   categoryChipActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.text,
   },
   categoryText: {
     fontSize: 13,
@@ -600,18 +578,13 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     color: colors.white,
   },
   submitButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 16,
+    backgroundColor: colors.text,
+    borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
     marginBottom: 32,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
   },
   submitButtonDisabled: {
     opacity: 0.5,
@@ -661,25 +634,5 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   },
   cameraButtonPlaceholder: {
     width: 60,
-  },
-  photoButtonBlur: {
-    flex: 1,
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    width: '100%',
-  },
-  inputText: {
-    fontSize: 15,
-    color: colors.text,
-    width: '100%',
-  },
-  textAreaText: {
-    minHeight: 100,
-  },
-  categoryChipBlur: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
   },
 });
