@@ -12,6 +12,7 @@ import {
 import { Stack, useRouter, Href } from 'expo-router';
 import { Image } from 'expo-image';
 import { Search, Plus, ArrowUpDown } from 'lucide-react-native';
+import { BlurView } from 'expo-blur';
 import { useMediaContext, SortOption } from '@/contexts/MediaContext';
 import { CATEGORIES, CategoryId } from '@/constants/categories';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -113,7 +114,7 @@ export default function CollectionScreen() {
       />
 
       <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
+        <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.searchBar}>
           <Search size={18} color={colors.textLight} />
           <TextInput
             style={styles.searchInput}
@@ -133,9 +134,9 @@ export default function CollectionScreen() {
           >
             <ArrowUpDown size={18} color={colors.text} />
           </TouchableOpacity>
-        </View>
+        </BlurView>
         {showSortMenu && (
-          <View style={styles.sortMenu}>
+          <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.sortMenu}>
             {SORT_OPTIONS.map((option) => (
               <TouchableOpacity
                 key={option.value}
@@ -161,7 +162,7 @@ export default function CollectionScreen() {
                 </Text>
               </TouchableOpacity>
             ))}
-          </View>
+          </BlurView>
         )}
       </View>
 
@@ -173,9 +174,15 @@ export default function CollectionScreen() {
           accessibilityLabel="Show all categories"
           accessibilityState={{ selected: selectedCategory === 'all' }}
         >
-          <Text style={[styles.filterText, selectedCategory === 'all' && styles.filterTextActive]}>
-            All
-          </Text>
+          <BlurView
+            intensity={selectedCategory === 'all' ? 0 : 60}
+            tint={colors.white === '#FFFFFF' ? 'light' : 'dark'}
+            style={styles.filterChipBlur}
+          >
+            <Text style={[styles.filterText, selectedCategory === 'all' && styles.filterTextActive]}>
+              All
+            </Text>
+          </BlurView>
         </TouchableOpacity>
         {CATEGORIES.filter(cat => items.some(item => item.category === cat.id)).map((category) => (
           <TouchableOpacity
@@ -186,9 +193,15 @@ export default function CollectionScreen() {
             accessibilityLabel={`Filter by ${category.label}`}
             accessibilityState={{ selected: selectedCategory === category.id }}
           >
-            <Text style={[styles.filterText, selectedCategory === category.id && styles.filterTextActive]}>
-              {category.emoji} {category.label}
-            </Text>
+            <BlurView
+              intensity={selectedCategory === category.id ? 0 : 60}
+              tint={colors.white === '#FFFFFF' ? 'light' : 'dark'}
+              style={styles.filterChipBlur}
+            >
+              <Text style={[styles.filterText, selectedCategory === category.id && styles.filterTextActive]}>
+                {category.emoji} {category.label}
+              </Text>
+            </BlurView>
           </TouchableOpacity>
         ))}
       </View>
@@ -219,12 +232,14 @@ export default function CollectionScreen() {
               accessibilityLabel="Add your first item"
               accessibilityHint="Navigate to add new item screen"
             >
-              <View style={styles.emptyHintIcon}>
-                <Plus size={16} color={colors.white} strokeWidth={2.5} />
-              </View>
-              <Text style={styles.emptyHintText}>
-                Tap here to add your first item
-              </Text>
+              <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.emptyHintBlur}>
+                <View style={styles.emptyHintIcon}>
+                  <Plus size={16} color={colors.white} strokeWidth={2.5} />
+                </View>
+                <Text style={styles.emptyHintText}>
+                  Tap here to add your first item
+                </Text>
+              </BlurView>
             </TouchableOpacity>
           </View>
         ) : (
@@ -274,11 +289,13 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
-    borderRadius: 12,
+    borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: Platform.OS === 'ios' ? 10 : 8,
     gap: 10,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
   },
   searchInput: {
     flex: 1,
@@ -290,18 +307,19 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   },
   sortMenu: {
     marginTop: 8,
-    backgroundColor: colors.white,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
   },
   sortOption: {
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.background,
+    borderBottomColor: colors.glassBorder,
   },
   sortOptionActive: {
-    backgroundColor: colors.cream,
+    backgroundColor: 'rgba(255, 155, 155, 0.15)',
   },
   sortOptionText: {
     fontSize: 15,
@@ -322,11 +340,14 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   filterChip: {
     paddingHorizontal: 14,
     paddingVertical: 7,
-    borderRadius: 16,
-    backgroundColor: colors.white,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
   },
   filterChipActive: {
-    backgroundColor: colors.text,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   filterText: {
     fontSize: 14,
@@ -346,9 +367,15 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   },
   card: {
     width: '48%',
-    backgroundColor: colors.white,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
   },
   cardImage: {
     width: '100%',
@@ -357,6 +384,7 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   },
   cardContent: {
     padding: 12,
+    backgroundColor: colors.glass,
   },
   cardTitle: {
     fontSize: 16,
@@ -409,17 +437,19 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
   emptyHint: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     gap: 10,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
   },
   emptyHintIcon: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: colors.text,
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -428,5 +458,17 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     fontSize: 15,
     color: colors.text,
     fontWeight: '600' as const,
+  },
+  filterChipBlur: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+  },
+  emptyHintBlur: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 10,
+    width: '100%',
   },
 });

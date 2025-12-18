@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronRight, Shield, FileText, Database, Mail } from 'lucide-react-native';
+import { BlurView } from 'expo-blur';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function SettingsScreen() {
@@ -44,7 +45,7 @@ export default function SettingsScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Legal & Privacy</Text>
-        <View style={styles.itemsContainer}>
+        <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.itemsContainer}>
           {legalItems.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -71,12 +72,12 @@ export default function SettingsScreen() {
               </TouchableOpacity>
             );
           })}
-        </View>
+        </BlurView>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Support</Text>
-        <View style={styles.itemsContainer}>
+        <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.itemsContainer}>
           <View style={styles.supportItem}>
             <View style={styles.iconContainer}>
               <Mail size={22} color={colors.primary} />
@@ -86,12 +87,12 @@ export default function SettingsScreen() {
               <Text style={styles.supportEmail}>empyria8@gmail.com</Text>
             </View>
           </View>
-        </View>
+        </BlurView>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>About</Text>
-        <View style={styles.itemsContainer}>
+        <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.itemsContainer}>
           <View style={styles.infoItem}>
             <Text style={styles.infoLabel}>App Name</Text>
             <Text style={styles.infoValue}>My Physical Media</Text>
@@ -100,7 +101,7 @@ export default function SettingsScreen() {
             <Text style={styles.infoLabel}>Version</Text>
             <Text style={styles.infoValue}>1.0.0</Text>
           </View>
-        </View>
+        </BlurView>
       </View>
     </ScrollView>
   );
@@ -127,16 +128,17 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     marginBottom: 12,
   },
   itemsContainer: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.background,
+    borderBottomColor: colors.glassBorder,
   },
   itemLast: {
     borderBottomWidth: 0,
@@ -145,7 +147,7 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.cream,
+    backgroundColor: 'rgba(255, 155, 155, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -170,7 +172,7 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.background,
+    borderBottomColor: colors.glassBorder,
   },
   infoLabel: {
     fontSize: 16,

@@ -9,6 +9,7 @@ import {
 import { useRouter, Href } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Sparkles } from 'lucide-react-native';
+import { BlurView } from 'expo-blur';
 import { useTheme } from '@/contexts/ThemeContext';
 
 const ONBOARDING_KEY = 'onboarding_complete';
@@ -72,9 +73,11 @@ export default function OnboardingScreen() {
         </View>
 
         <View style={styles.form}>
-          <Text style={styles.note}>
-            📱 All your media is stored locally on your device. No cloud storage, no accounts required!
-          </Text>
+          <BlurView intensity={80} tint={colors.white === '#FFFFFF' ? 'light' : 'dark'} style={styles.note}>
+            <Text style={styles.noteText}>
+              📱 All your media is stored locally on your device. No cloud storage, no accounts required!
+            </Text>
+          </BlurView>
         </View>
 
         <TouchableOpacity
@@ -110,7 +113,7 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: colors.cream,
+    backgroundColor: 'rgba(255, 155, 155, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
@@ -179,11 +182,13 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     fontSize: 16,
     color: colors.text,
     lineHeight: 24,
-    backgroundColor: colors.white,
     padding: 20,
     borderRadius: 16,
     textAlign: 'center',
     fontWeight: '500' as const,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
   },
   button: {
     backgroundColor: colors.primary,
@@ -191,11 +196,23 @@ const createStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleShe
     paddingVertical: 18,
     alignItems: 'center',
     marginTop: 'auto',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
 
   buttonText: {
     fontSize: 18,
     fontWeight: '700' as const,
     color: colors.white,
+  },
+  noteText: {
+    fontSize: 16,
+    color: colors.text,
+    lineHeight: 24,
+    textAlign: 'center',
+    fontWeight: '500' as const,
   },
 });
